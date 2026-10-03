@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: shop-chatbot
+    env: node
+    buildCommand: npm install
+    startCommand: node server.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: ALLOWED_ORIGINS
+        value: '*'
+      - key: TRUST_PROXY
+        value: 'true'
+      # Lưu ý: Set biến GEMINI_API_KEY ở trên bảng điều khiển của Render
