@@ -70,7 +70,7 @@ async function testHttp() {
 
   const page = await request('GET', '/');
   assert.strictEqual(page.status, 200);
-  assert(page.body.includes('Đây là cửa hàng minh họa'));
+  assert(page.body.includes('Nhà Mộc'));
 
   const products = await request('GET', '/api/products');
   assert.strictEqual(products.status, 200);
