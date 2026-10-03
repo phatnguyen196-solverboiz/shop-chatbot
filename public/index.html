@@ -966,6 +966,7 @@
       <div class="footer-col">
         <h4>Liên Hệ</h4>
         <ul>
+          <li>Địa chỉ: <span id="footer-address">123 Đường Cà Phê, Quận 1, TP.HCM</span></li>
           <li>Hotline: <strong style="color:#fff" id="footer-hotline">0900 000 000</strong></li>
           <li>Zalo: <span id="footer-zalo">zalo.me/0900000000</span></li>
           <li>Giờ mở cửa: <span id="footer-hours">8h - 21h mỗi ngày</span></li>
@@ -1236,21 +1237,9 @@
 
     // Trigger AI Chatbot with custom questions
     function askBotAbout(productName) {
-      const fab = document.querySelector('.sc-fab');
-      const panel = document.querySelector('.sc-panel');
-      const input = document.querySelector('.sc-input');
-      const form = document.querySelector('.sc-form');
-
-      if (fab && !panel.classList.contains('sc-open')) {
-        fab.click();
-      }
-
-      setTimeout(() => {
-        if (input && form) {
-          input.value = `Tư vấn chi tiết cho mình về ${productName} với nhé!`;
-          input.focus();
-        }
-      }, 350);
+      document.dispatchEvent(new CustomEvent('shopchat:open', {
+        detail: { question: `Tư vấn chi tiết cho mình về sản phẩm "${productName}" với nhé!` }
+      }));
     }
 
     // Fetch initial store data
@@ -1264,6 +1253,7 @@
         document.getElementById('header-phone').textContent = shop.hotline || '0900 000 000';
         document.getElementById('footer-shop-name').textContent = '☕ ' + (shop.name || 'Cà Phê Nhà Mộc');
         document.getElementById('footer-about').textContent = shop.about || '';
+        document.getElementById('footer-address').textContent = shop.address || '123 Đường Cà Phê, Quận 1, TP.HCM';
         document.getElementById('footer-hotline').textContent = shop.hotline || '';
         document.getElementById('footer-zalo').textContent = shop.zalo || '';
         document.getElementById('footer-hours').textContent = shop.supportHours || '';
@@ -1298,8 +1288,9 @@
 
     // Hero open chat
     document.getElementById('hero-open-chat').addEventListener('click', () => {
-      const fab = document.querySelector('.sc-fab');
-      if (fab) fab.click();
+      document.dispatchEvent(new CustomEvent('shopchat:open', {
+        detail: { question: 'Xin chào, mình đang muốn tìm loại cà phê phù hợp với khẩu vị của mình!' }
+      }));
     });
 
     // Order Consultation through Chatbot
@@ -1311,20 +1302,9 @@
       const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
       const text = `Mình đang muốn đặt đơn gồm: ${itemsDesc} (Tổng: ${vnd(subtotal)}). Shop tư vấn cách thức giao hàng và phí ship giúp mình nhé!`;
 
-      const fab = document.querySelector('.sc-fab');
-      const panel = document.querySelector('.sc-panel');
-      const input = document.querySelector('.sc-input');
-
-      if (fab && !panel.classList.contains('sc-open')) {
-        fab.click();
-      }
-
-      setTimeout(() => {
-        if (input) {
-          input.value = text;
-          input.focus();
-        }
-      }, 350);
+      document.dispatchEvent(new CustomEvent('shopchat:open', {
+        detail: { question: text }
+      }));
     });
 
     // Checkout button demo action

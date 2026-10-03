@@ -299,16 +299,19 @@ function readBody(req) {
   return new Promise((resolve, reject) => {
     let size = 0;
     const chunks = [];
+    let tooLarge = false;
     req.on('data', (c) => {
       size += c.length;
       if (size > MAX_BODY_BYTES) {
-        reject(Object.assign(new Error('Payload quá lớn'), { status: 413 }));
-        req.destroy();
+        tooLarge = true;
         return;
       }
-      chunks.push(c);
+      if (!tooLarge) chunks.push(c);
     });
-    req.on('end', () => resolve(Buffer.concat(chunks).toString('utf8')));
+    req.on('end', () => {
+      if (tooLarge) reject(Object.assign(new Error('Payload quá lớn'), { status: 413 }));
+      else resolve(Buffer.concat(chunks).toString('utf8'));
+    });
     req.on('error', reject);
   });
 }
@@ -322,8 +325,10 @@ function sanitizeMessages(raw) {
   const out = [];
   for (const m of raw.slice(-MAX_HISTORY)) {
     if (!m || typeof m !== 'object') continue;
+    if (m.role !== 'user' && m.role !== 'assistant') continue;
+    if (typeof m.content !== 'string') continue;
     const role = m.role === 'assistant' ? 'model' : 'user';
-    const text = String(m.content ?? '').slice(0, MAX_MESSAGE_CHARS).trim();
+    const text = m.content.slice(0, MAX_MESSAGE_CHARS).trim();
     if (!text) continue;
     const prev = out[out.length - 1];
     if (prev && prev.role === role) prev.text = `${prev.text}\n${text}`.slice(-MAX_MESSAGE_CHARS * 2);
@@ -425,6 +430,9 @@ function createServer() {
       const { pathname } = new URL(req.url, 'http://localhost');
 
       if (req.method === 'OPTIONS') {
+        if (!isOriginAllowed(req.headers.origin)) {
+          return sendJson(req, res, 403, { error: 'Website này không được phép dùng chatbot.' });
+        }
         res.writeHead(204, {
           ...corsHeaders(req),
           'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
