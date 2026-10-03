@@ -23,10 +23,10 @@
   var title = attr('data-title', 'Trợ lý bán hàng');
   var greeting = attr('data-greeting', 'Xin chào! Mình có thể giúp gì cho bạn? 😊');
   var color = attr('data-color', '#8b5a2b');
-  if (!/^#[0-9a-f]{3,8}$/i.test(color)) color = '#8b5a2b'; // chặn chèn CSS lạ
+  if (!/^#(?:[0-9a-f]{3}|[0-9a-f]{6})$/i.test(color)) color = '#8b5a2b';
   var suggestions = ['Có những sản phẩm nào?', 'Phí ship thế nào?', 'Chính sách đổi trả?'];
 
-  var STORAGE_KEY = 'shopchat_history_v1';
+  var STORAGE_KEY = 'shopchat_history_v1:' + apiBase;
   var MAX_HISTORY = 12;
   var history = [];
   var busy = false;
@@ -35,6 +35,9 @@
   try {
     history = JSON.parse(sessionStorage.getItem(STORAGE_KEY) || '[]');
     if (!Array.isArray(history)) history = [];
+    history = history.filter(function (m) {
+      return m && (m.role === 'user' || m.role === 'assistant') && typeof m.content === 'string';
+    }).slice(-MAX_HISTORY);
   } catch (e) {
     history = [];
   }
@@ -79,7 +82,8 @@
     '.sc-send:hover:not(:disabled){transform:scale(1.05)}' +
     '.sc-send svg{width:20px; height:20px; fill:currentColor; margin-left:2px}' +
     '.sc-send:disabled,.sc-input:disabled{opacity:0.5;cursor:not-allowed}' +
-    '@media(max-width:480px){.sc-panel{right:16px;left:16px;bottom:92px;width:auto;height:calc(100vh - 120px)}.sc-fab{right:16px;bottom:16px}}';
+    '@media(max-width:480px){.sc-panel{right:16px;left:16px;bottom:92px;width:auto;height:calc(100dvh - 112px);max-height:calc(100dvh - 112px)}.sc-fab{right:16px;bottom:16px}}' +
+    '@media(prefers-reduced-motion:reduce){.sc-root *{animation-duration:0.01ms!important;transition-duration:0.01ms!important;scroll-behavior:auto!important}}';
 
   var style = document.createElement('style');
   style.textContent = css;
@@ -97,10 +101,14 @@
   fab.innerHTML = '<svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>';
   fab.type = 'button';
   fab.setAttribute('aria-label', 'Mở khung chat');
+  fab.setAttribute('aria-expanded', 'false');
+  fab.setAttribute('aria-controls', 'sc-chat-panel');
 
   var panel = el('div', 'sc-panel');
+  panel.id = 'sc-chat-panel';
   panel.setAttribute('role', 'dialog');
   panel.setAttribute('aria-label', title);
+  panel.inert = true;
 
   var head = el('div', 'sc-head');
   var botInfo = el('div', 'sc-bot-info');
@@ -121,6 +129,7 @@
 
   var msgs = el('div', 'sc-msgs');
   msgs.setAttribute('aria-live', 'polite');
+  msgs.setAttribute('aria-relevant', 'additions');
 
   var form = el('form', 'sc-form');
   var input = el('input', 'sc-input');
@@ -212,7 +221,7 @@
     text = (text || '').trim();
     if (!text || busy) return;
 
-    addMessage('user', text);
+    var userBubble = addMessage('user', text);
     history.push({ role: 'user', content: text });
     saveHistory();
     input.value = '';
@@ -248,9 +257,11 @@
       })
       .catch(function (err) {
         typing.remove();
-        // Bỏ tin vừa gửi khỏi lịch sử để lần thử lại không bị trùng
+        // Khôi phục nội dung để khách sửa hoặc gửi lại sau khi lỗi.
         history.pop();
         saveHistory();
+        userBubble.remove();
+        input.value = text;
         var message = err instanceof TypeError ? 'Không kết nối được tới server chatbot.' : err.message;
         addMessage('assistant', message, 'sc-err');
       })
@@ -264,8 +275,11 @@
 
   function toggle(open) {
     panel.classList.toggle('sc-open', open);
+    panel.inert = !open;
     fab.setAttribute('aria-label', open ? 'Đóng khung chat' : 'Mở khung chat');
+    fab.setAttribute('aria-expanded', String(open));
     if (open) input.focus();
+    else fab.focus();
   }
 
   fab.addEventListener('click', function () {
@@ -279,7 +293,14 @@
     send(input.value);
   });
   document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape') toggle(false);
+    if (e.key === 'Escape' && panel.classList.contains('sc-open')) toggle(false);
+  });
+  document.addEventListener('shopchat:open', function (e) {
+    toggle(true);
+    if (e.detail && typeof e.detail.question === 'string') {
+      input.value = e.detail.question.slice(0, input.maxLength);
+      input.focus();
+    }
   });
 
   // Khôi phục cuộc trò chuyện khi tải lại trang
