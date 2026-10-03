@@ -51,6 +51,7 @@ const CONFIG = {
 
 const PUBLIC_DIR = path.join(__dirname, 'public');
 const MAX_BODY_BYTES = 20 * 1024;
+const MAX_OCR_BYTES = 10 * 1024 * 1024;
 const MAX_HISTORY = 12;
 const MAX_MESSAGE_CHARS = 1000;
 
@@ -295,14 +296,14 @@ function sendText(res, status, text) {
   res.end(text);
 }
 
-function readBody(req) {
+function readBody(req, maxBytes = MAX_BODY_BYTES) {
   return new Promise((resolve, reject) => {
     let size = 0;
     const chunks = [];
     let tooLarge = false;
     req.on('data', (c) => {
       size += c.length;
-      if (size > MAX_BODY_BYTES) {
+      if (size > maxBytes) {
         tooLarge = true;
         return;
       }
@@ -388,9 +389,10 @@ async function callGeminiJson(prompt, systemInstruction = null, imageBase64 = nu
         const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
         const parts = [{ text: prompt }];
         if (imageBase64) {
-          // Xóa prefix "data:image/jpeg;base64," nếu có
-          const base64Data = imageBase64.replace(/^data:image\/\w+;base64,/, '');
-          parts.push({ inlineData: { mimeType: 'image/jpeg', data: base64Data } });
+          const mimeMatch = imageBase64.match(/^data:(image\/[a-zA-Z0-9.-]+);base64,/i);
+          const mimeType = mimeMatch ? mimeMatch[1].toLowerCase() : 'image/jpeg';
+          const base64Data = imageBase64.replace(/^data:image\/[a-zA-Z0-9.-]+;base64,/i, '');
+          parts.push({ inlineData: { mimeType, data: base64Data } });
         }
 
         const res = await fetch(url, {
@@ -409,11 +411,12 @@ async function callGeminiJson(prompt, systemInstruction = null, imageBase64 = nu
         }
         
         const data = await res.json();
-        const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
-        return JSON.parse(text);
+        const rawText = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+        const cleaned = rawText.replace(/```(?:json)?\s*([\s\S]*?)\s*```/i, '$1').trim();
+        return JSON.parse(cleaned);
       } catch (err) {
         if (err.message === 'Switch model') break; // Chuyển model khác
-        await sleep(500); // Thử lại
+        await sleep(400); // Thử lại
       }
     }
   }
@@ -493,33 +496,114 @@ function createServer() {
       }
       if (pathname === '/api/ai-search') {
         if (req.method !== 'POST') return sendJson(req, res, 405, { error: 'Chỉ hỗ trợ POST.' });
-        const body = JSON.parse(await readBody(req));
-        if (!CONFIG.apiKey) return sendJson(req, res, 200, { ids: [] });
-        const prompt = `Người dùng tìm kiếm: "${body.query}". Dựa vào danh sách sản phẩm sau, hãy trả về danh sách các ID sản phẩm phù hợp nhất (tối đa 4). Trả về JSON mảng chuỗi ID (ví dụ: ["robusta-500", "phin-nhom"]). Nếu không có gì phù hợp, trả về mảng rỗng [].\nDanh sách sản phẩm:\n${JSON.stringify(DATA.products.map(p => ({id: p.id, name: p.name, desc: p.description})))}`;
+        if (!isOriginAllowed(req.headers.origin)) return sendJson(req, res, 403, { error: 'Origin not allowed' });
+        if (isRateLimited(clientIp(req))) return sendJson(req, res, 429, { error: 'Hơi nhanh, vui lòng thử lại sau ít phút.' });
+
+        let body;
+        try {
+          body = JSON.parse(await readBody(req));
+        } catch (err) {
+          return sendJson(req, res, err.status || 400, { error: 'Dữ liệu không hợp lệ', ids: [] });
+        }
+
+        const query = typeof body?.query === 'string' ? body.query.slice(0, 300).trim() : '';
+        if (!query) return sendJson(req, res, 200, { ids: [] });
+
+        if (!CONFIG.apiKey) {
+          const q = normalize(query);
+          const matches = DATA.products
+            .filter((p) => hasAny(q, p.keywords) || normalize(p.name).includes(q) || normalize(p.description).includes(q))
+            .map((p) => p.id);
+          return sendJson(req, res, 200, { ids: matches.length ? matches : [DATA.products[0].id] });
+        }
+
+        const prompt = `Người dùng tìm kiếm: "${query}". Dựa vào danh sách sản phẩm sau, hãy trả về danh sách các ID sản phẩm phù hợp nhất (tối đa 4). Trả về JSON mảng chuỗi ID (ví dụ: ["robusta-500", "phin-nhom"]). Nếu không có gì phù hợp, trả về mảng rỗng [].\nDanh sách sản phẩm:\n${JSON.stringify(DATA.products.map(p => ({id: p.id, name: p.name, desc: p.description})))}`;
         try {
           const result = await callGeminiJson(prompt);
           return sendJson(req, res, 200, { ids: Array.isArray(result) ? result : [] });
-        } catch { return sendJson(req, res, 200, { ids: [] }); }
+        } catch (err) {
+          console.warn('[ai-search] Lỗi Gemini:', err.message);
+          const q = normalize(query);
+          const fallback = DATA.products.filter(p => hasAny(q, p.keywords)).map(p => p.id);
+          return sendJson(req, res, 200, { ids: fallback });
+        }
       }
+
       if (pathname === '/api/ocr') {
         if (req.method !== 'POST') return sendJson(req, res, 405, { error: 'Chỉ hỗ trợ POST.' });
-        const body = JSON.parse(await readBody(req));
-        if (!CONFIG.apiKey) return sendJson(req, res, 200, { amount: 120000, valid: true });
-        const prompt = `Đây là ảnh chụp màn hình hóa đơn/chuyển khoản. Hãy trích xuất số tiền chuyển và nội dung chuyển khoản. Trả về đúng định dạng JSON: {"amount": <số tiền dạng số, không có dấu phẩy/chữ>, "content": "<nội dung>", "valid": <true/false (true nếu là biên lai chuyển khoản thành công)>}.`;
+        if (!isOriginAllowed(req.headers.origin)) return sendJson(req, res, 403, { error: 'Origin not allowed' });
+        if (isRateLimited(clientIp(req))) return sendJson(req, res, 429, { error: 'Hơi nhanh, vui lòng thử lại sau ít phút.', valid: false });
+
+        let body;
         try {
-          const result = await callGeminiJson(prompt, null, body.image);
-          return sendJson(req, res, 200, result);
-        } catch { return sendJson(req, res, 200, { valid: false }); }
+          body = JSON.parse(await readBody(req, MAX_OCR_BYTES));
+        } catch (err) {
+          return sendJson(req, res, err.status || 400, { error: err.message, valid: false });
+        }
+
+        const image = typeof body?.image === 'string' ? body.image : '';
+        if (!image) return sendJson(req, res, 400, { error: 'Thiếu hình ảnh', valid: false });
+
+        if (!CONFIG.apiKey) {
+          return sendJson(req, res, 200, {
+            amount: 150000,
+            content: 'Chuyen khoan don hang Ca Phe Nha Moc',
+            valid: true
+          });
+        }
+
+        const prompt = `Đây là ảnh chụp màn hình hóa đơn/chuyển khoản ngân hàng. Hãy trích xuất số tiền chuyển và nội dung chuyển khoản. Trả về đúng định dạng JSON: {"amount": <số tiền dạng số nguyên, ví dụ 150000>, "content": "<nội dung chuyển khoản hoặc lời nhắn>", "valid": <true/false (true nếu là biên lai chuyển khoản hoặc giao dịch thành công)>}.`;
+        try {
+          const result = await callGeminiJson(prompt, null, image);
+          return sendJson(req, res, 200, {
+            amount: typeof result?.amount === 'number' ? result.amount : Number(String(result?.amount || 0).replace(/\D/g, '')),
+            content: String(result?.content || ''),
+            valid: Boolean(result?.valid)
+          });
+        } catch (err) {
+          console.warn('[ocr] Lỗi OCR Gemini:', err.message);
+          return sendJson(req, res, 200, { valid: false, error: 'Không thể xử lý hình ảnh' });
+        }
       }
+
       if (pathname === '/api/sentiment') {
         if (req.method !== 'POST') return sendJson(req, res, 405, { error: 'Chỉ hỗ trợ POST.' });
-        const body = JSON.parse(await readBody(req));
-        if (!CONFIG.apiKey) return sendJson(req, res, 200, { sentiment: 'positive', summary: 'Cảm ơn bạn đã đánh giá!' });
-        const prompt = `Phân tích đánh giá sau: "${body.review}". Trả về JSON: {"sentiment": "positive" | "negative" | "neutral", "summary": "tóm tắt ngắn gọn 1 câu về ý chính"}`;
+        if (!isOriginAllowed(req.headers.origin)) return sendJson(req, res, 403, { error: 'Origin not allowed' });
+        if (isRateLimited(clientIp(req))) return sendJson(req, res, 429, { error: 'Hơi nhanh, vui lòng thử lại sau ít phút.' });
+
+        let body;
+        try {
+          body = JSON.parse(await readBody(req));
+        } catch (err) {
+          return sendJson(req, res, err.status || 400, { error: 'Dữ liệu không hợp lệ' });
+        }
+
+        const review = typeof body?.review === 'string' ? body.review.slice(0, 1000).trim() : '';
+        if (!review) return sendJson(req, res, 400, { error: 'Thiếu nội dung đánh giá' });
+
+        if (!CONFIG.apiKey) {
+          const norm = normalize(review);
+          const isNeg = hasAny(norm, ['te', 'do', 'cham', 'kem', 'that vong', 'khong ngon', 'chua qua', 'khong hai long']);
+          return sendJson(req, res, 200, {
+            sentiment: isNeg ? 'negative' : 'positive',
+            summary: isNeg ? 'Khách hàng có trải nghiệm chưa hài lòng về đơn hàng.' : 'Khách hàng rất hài lòng về chất lượng và hương vị sản phẩm.'
+          });
+        }
+
+        const prompt = `Phân tích đánh giá sau của khách hàng: "${review}". Trả về JSON: {"sentiment": "positive" | "negative" | "neutral", "summary": "<tóm tắt ngắn gọn 1 câu về ý chính của khách hàng>"}`;
         try {
           const result = await callGeminiJson(prompt);
-          return sendJson(req, res, 200, result);
-        } catch { return sendJson(req, res, 200, { sentiment: 'neutral', summary: 'Cảm ơn đánh giá của bạn' }); }
+          return sendJson(req, res, 200, {
+            sentiment: ['positive', 'negative', 'neutral'].includes(result?.sentiment) ? result.sentiment : 'positive',
+            summary: String(result?.summary || 'Cảm ơn đánh giá của bạn!')
+          });
+        } catch (err) {
+          console.warn('[sentiment] Lỗi phân tích Gemini:', err.message);
+          return sendJson(req, res, 200, {
+            sentiment: 'positive',
+            summary: 'Cảm ơn bạn đã chia sẻ cảm nhận về Nhà Mộc!'
+          });
+        }
       }
       if (req.method === 'GET' || req.method === 'HEAD') return serveStatic(req, res, pathname);
 

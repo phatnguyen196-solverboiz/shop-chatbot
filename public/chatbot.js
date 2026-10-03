@@ -299,7 +299,11 @@
     toggle(true);
     if (e.detail && typeof e.detail.question === 'string') {
       input.value = e.detail.question.slice(0, input.maxLength);
-      input.focus();
+      if (e.detail.autoSend) {
+        send(input.value);
+      } else {
+        input.focus();
+      }
     }
   });
 

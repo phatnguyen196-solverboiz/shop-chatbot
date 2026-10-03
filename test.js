@@ -83,7 +83,23 @@ async function testHttp() {
   const oversized = await request('POST', '/api/chat',
     JSON.stringify({ messages: [{ role: 'user', content: 'x'.repeat(21000) }] }));
   assert.strictEqual(oversized.status, 413);
-  console.log('✓ Test route trang, sản phẩm, dữ liệu sai và payload lớn thành công');
+
+  // Test AI Search endpoint
+  const searchRes = await request('POST', '/api/ai-search', JSON.stringify({ query: 'robusta phin' }));
+  assert.strictEqual(searchRes.status, 200);
+  assert(Array.isArray(JSON.parse(searchRes.body).ids));
+
+  // Test OCR endpoint
+  const ocrRes = await request('POST', '/api/ocr', JSON.stringify({ image: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==' }));
+  assert.strictEqual(ocrRes.status, 200);
+  assert.strictEqual(typeof JSON.parse(ocrRes.body).valid, 'boolean');
+
+  // Test Sentiment endpoint
+  const sentimentRes = await request('POST', '/api/sentiment', JSON.stringify({ review: 'Cà phê rất ngon và thơm!' }));
+  assert.strictEqual(sentimentRes.status, 200);
+  assert.strictEqual(JSON.parse(sentimentRes.body).sentiment, 'positive');
+
+  console.log('✓ Test route trang, sản phẩm, dữ liệu sai, payload lớn và AI endpoints thành công');
 }
 
 testHttp().then(() => console.log('\n🎉 TẤT CẢ TEST ĐỀU VƯỢT QUA!')).catch((err) => {
