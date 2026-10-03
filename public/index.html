@@ -3,95 +3,298 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Cà Phê Nhà Mộc - Cà phê rang xay &amp; dụng cụ pha chế</title>
+  <title>Cà Phê Nhà Mộc - Cà phê rang xay & dụng cụ pha chế</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
-    :root { --brown: #8b5a2b; --dark: #2b1d12; --cream: #f6f4f1; }
+    :root { 
+      --primary: #8b5a2b; 
+      --primary-hover: #704721;
+      --dark: #1a1a1a; 
+      --bg-color: #f8f9fa;
+      --card-bg: #ffffff;
+      --text-main: #333333;
+      --text-muted: #666666;
+    }
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color: var(--dark); background: #fff; line-height: 1.5; }
-    header { display: flex; justify-content: space-between; align-items: center; padding: 18px 6vw; border-bottom: 1px solid #eee; }
-    .logo { font-weight: 800; font-size: 1.25rem; color: var(--brown); }
-    header span { color: #7a6f63; font-size: .95rem; }
-    .hero { background: linear-gradient(135deg, #3b2616, #8b5a2b); color: #fff; padding: 72px 6vw; }
-    .hero h1 { font-size: clamp(1.8rem, 4vw, 2.8rem); max-width: 640px; line-height: 1.2; }
-    .hero p { margin-top: 14px; max-width: 520px; opacity: .9; }
-    .hero button { margin-top: 24px; background: #fff; color: var(--brown); border: 0; border-radius: 999px; padding: 12px 24px; font-weight: 700; font-size: 1rem; cursor: pointer; }
-    main { padding: 56px 6vw; }
-    h2 { font-size: 1.6rem; margin-bottom: 24px; }
-    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; }
-    .card { background: var(--cream); border-radius: 14px; padding: 20px; display: flex; flex-direction: column; gap: 8px; }
-    .card h3 { font-size: 1.05rem; }
-    .card p { color: #5b5047; font-size: .92rem; flex: 1; }
-    .price { font-weight: 800; color: var(--brown); font-size: 1.1rem; }
-    .tag { align-self: flex-start; font-size: .75rem; font-weight: 700; padding: 3px 10px; border-radius: 999px; background: #e3f3e3; color: #226622; }
-    .tag.out { background: #fdecea; color: #8a1c14; }
-    footer { padding: 32px 6vw; background: var(--dark); color: #d9cfc4; font-size: .92rem; }
-    footer strong { color: #fff; }
+    body { 
+      font-family: 'Inter', sans-serif; 
+      color: var(--text-main); 
+      background: var(--bg-color); 
+      line-height: 1.6; 
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Header */
+    header { 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+      padding: 16px 5%; 
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid #eaeaea; 
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .logo { 
+      font-weight: 800; 
+      font-size: 1.4rem; 
+      color: var(--primary); 
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .header-right { display: flex; gap: 20px; align-items: center; }
+    .header-right span { color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+    .cart-btn {
+      background: none; border: none; font-size: 1.2rem; cursor: pointer; color: var(--dark);
+      transition: transform 0.2s;
+    }
+    .cart-btn:hover { transform: scale(1.1); color: var(--primary); }
+
+    /* Hero Section */
+    .hero { 
+      background: linear-gradient(rgba(26, 26, 26, 0.7), rgba(26, 26, 26, 0.8)), 
+                  url('https://images.unsplash.com/photo-1497935586351-b67a49e012bf?ixlib=rb-1.2.1&auto=format&fit=crop&w=1600&q=80') center/cover no-repeat;
+      color: #fff; 
+      padding: 100px 5%; 
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 800; max-width: 800px; line-height: 1.2; margin-bottom: 16px; }
+    .hero p { font-size: 1.1rem; max-width: 600px; opacity: 0.9; margin-bottom: 32px; font-weight: 400; }
+    .hero button { 
+      background: var(--primary); 
+      color: #fff; 
+      border: none; 
+      border-radius: 999px; 
+      padding: 14px 32px; 
+      font-weight: 600; 
+      font-size: 1.05rem; 
+      cursor: pointer; 
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(139, 90, 43, 0.4);
+    }
+    .hero button:hover { 
+      background: var(--primary-hover); 
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(139, 90, 43, 0.6);
+    }
+
+    /* Main Content */
+    main { padding: 60px 5%; max-width: 1400px; margin: 0 auto; }
+    .section-title { 
+      font-size: 2rem; 
+      font-weight: 700; 
+      margin-bottom: 30px; 
+      color: var(--dark);
+      text-align: center;
+    }
+    .section-title::after {
+      content: '';
+      display: block;
+      width: 60px;
+      height: 4px;
+      background: var(--primary);
+      margin: 12px auto 0;
+      border-radius: 2px;
+    }
+
+    /* Product Grid */
+    .grid { 
+      display: grid; 
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
+      gap: 30px; 
+    }
+    .card { 
+      background: var(--card-bg); 
+      border-radius: 16px; 
+      overflow: hidden;
+      display: flex; 
+      flex-direction: column; 
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      border: 1px solid #f0f0f0;
+    }
+    .card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
+    }
+    .card-img-wrap {
+      position: relative;
+      padding-top: 75%; /* 4:3 Aspect Ratio */
+      overflow: hidden;
+      background: #eee;
+    }
+    .card-img-wrap img {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s;
+    }
+    .card:hover .card-img-wrap img {
+      transform: scale(1.05);
+    }
+    .tag { 
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      font-size: 0.75rem; 
+      font-weight: 700; 
+      padding: 6px 12px; 
+      border-radius: 999px; 
+      background: rgba(255, 255, 255, 0.95); 
+      color: #059669; 
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      z-index: 10;
+    }
+    .tag.out { color: #dc2626; }
+    
+    .card-content {
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+    .card h3 { font-size: 1.15rem; font-weight: 700; margin-bottom: 8px; color: var(--dark); line-height: 1.3;}
+    .card p { color: var(--text-muted); font-size: 0.95rem; flex: 1; margin-bottom: 16px; }
+    
+    .card-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: auto;
+      padding-top: 16px;
+      border-top: 1px solid #f0f0f0;
+    }
+    .price { font-weight: 800; color: var(--primary); font-size: 1.25rem; }
+    .buy-btn {
+      background: #f3f4f6;
+      color: var(--text-main);
+      border: none;
+      border-radius: 8px;
+      padding: 8px 16px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .card:hover .buy-btn {
+      background: var(--primary);
+      color: white;
+    }
+
+    /* Footer */
+    footer { 
+      padding: 40px 5%; 
+      background: var(--dark); 
+      color: #9ca3af; 
+      font-size: 0.95rem;
+      text-align: center;
+    }
+    footer strong { color: #f3f4f6; font-size: 1.1rem; display: block; margin-bottom: 8px;}
+    footer p { margin-bottom: 12px; }
+    footer code { background: rgba(255,255,255,0.1); padding: 2px 6px; border-radius: 4px; color: #fff;}
+    
+    @media (max-width: 768px) {
+      .header-right span { display: none; }
+      .hero { padding: 70px 5%; }
+    }
   </style>
 </head>
 <body>
   <header>
-    <div class="logo">☕ Cà Phê Nhà Mộc</div>
-    <span id="hours"></span>
+    <div class="logo">☕ Nhà Mộc</div>
+    <div class="header-right">
+      <span id="hours">Đang tải...</span>
+      <button class="cart-btn" title="Giỏ hàng">🛒</button>
+    </div>
   </header>
 
   <section class="hero">
-    <h1>Cà phê rang xay thơm đậm, giao tận nhà</h1>
-    <p>Hỏi trợ lý ở góc phải màn hình để được tư vấn chọn loại cà phê hợp khẩu vị, xem giá và chính sách giao hàng.</p>
-    <button type="button" id="open-chat">Chat với trợ lý ngay</button>
+    <h1>Khơi nguồn năng lượng từ hạt cà phê nguyên chất</h1>
+    <p>Trải nghiệm hương vị cà phê rang xay thủ công đậm đà, giao hàng tận nơi. Hãy hỏi trợ lý ảo để tìm đúng gu của bạn!</p>
+    <button type="button" id="open-chat">Tư vấn chọn vị ngay ✨</button>
   </section>
 
   <main>
-    <h2>Sản phẩm</h2>
+    <h2 class="section-title">Sản phẩm nổi bật</h2>
     <div class="grid" id="products">Đang tải sản phẩm...</div>
   </main>
 
   <footer>
-    <p><strong id="shop-name"></strong> - Hotline: <span id="hotline"></span></p>
-    <p>Đây là trang demo. Thay thông tin trong <code>products.json</code> bằng dữ liệu shop của bạn.</p>
+    <strong id="shop-name">Cà Phê Nhà Mộc</strong>
+    <p>Hotline: <span id="hotline">...</span></p>
+    <p style="font-size: 0.85rem; margin-top: 20px;">Đây là trang demo. Thay thông tin trong <code>products.json</code> bằng dữ liệu shop của bạn.</p>
   </footer>
 
-  <!-- CHỈ CẦN MỘT DÒNG NÀY để có chatbot trên web của bạn -->
+  <!-- Dòng script nhúng chatbot -->
   <script src="/chatbot.js" defer></script>
 
   <script>
-    var vnd = function (n) { return n.toLocaleString('vi-VN') + 'đ'; };
+    const vnd = (n) => n.toLocaleString('vi-VN') + 'đ';
+
+    // Mảng ảnh minh họa ngẫu nhiên (chủ đề cà phê từ Unsplash)
+    const images = [
+      "https://images.unsplash.com/photo-1559525839-b184a4d698c7?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80",
+      "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80",
+      "https://images.unsplash.com/photo-1495474472202-8f3871f251c6?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80",
+      "https://images.unsplash.com/photo-1611162458324-aae1eb4129a4?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80",
+      "https://images.unsplash.com/photo-1509042239860-f550ce710b93?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80",
+      "https://images.unsplash.com/photo-1544787219-7f47ccb76574?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80"
+    ];
 
     fetch('/api/products')
-      .then(function (r) { return r.json(); })
-      .then(function (data) {
+      .then(r => r.json())
+      .then(data => {
         document.getElementById('shop-name').textContent = data.shop.name;
         document.getElementById('hotline').textContent = data.shop.hotline;
         document.getElementById('hours').textContent = 'Hỗ trợ ' + data.shop.supportHours;
 
-        var grid = document.getElementById('products');
-        grid.textContent = '';
-        data.products.forEach(function (p) {
-          var card = document.createElement('div');
+        const grid = document.getElementById('products');
+        grid.innerHTML = '';
+        
+        data.products.forEach((p, index) => {
+          const card = document.createElement('div');
           card.className = 'card';
-
-          var tag = document.createElement('span');
-          tag.className = 'tag' + (p.stock > 0 ? '' : ' out');
-          tag.textContent = p.stock > 0 ? 'Còn hàng' : 'Hết hàng';
-
-          var name = document.createElement('h3');
-          name.textContent = p.name;
-          var desc = document.createElement('p');
-          desc.textContent = p.description;
-          var price = document.createElement('div');
-          price.className = 'price';
-          price.textContent = vnd(p.price);
-
-          [tag, name, desc, price].forEach(function (n) { card.appendChild(n); });
+          
+          const imgUrl = images[index % images.length];
+          const isOut = p.stock <= 0;
+          
+          card.innerHTML = `
+            <div class="card-img-wrap">
+              <span class="tag ${isOut ? 'out' : ''}">${isOut ? 'Hết hàng' : 'Còn hàng'}</span>
+              <img src="${imgUrl}" alt="${p.name}" loading="lazy">
+            </div>
+            <div class="card-content">
+              <h3>${p.name}</h3>
+              <p>${p.description}</p>
+              <div class="card-footer">
+                <span class="price">${vnd(p.price)}</span>
+                <button class="buy-btn" ${isOut ? 'disabled title="Hết hàng"' : ''}>
+                  ${isOut ? 'Tạm hết' : 'Thêm giỏ'}
+                </button>
+              </div>
+            </div>
+          `;
           grid.appendChild(card);
         });
       })
-      .catch(function () {
-        document.getElementById('products').textContent = 'Không tải được danh sách sản phẩm.';
+      .catch(() => {
+        document.getElementById('products').innerHTML = '<p style="text-align:center; grid-column: 1/-1;">Không tải được danh sách sản phẩm. Hãy kiểm tra server.</p>';
       });
 
-    document.getElementById('open-chat').addEventListener('click', function () {
-      var fab = document.querySelector('.sc-fab');
-      if (fab && !document.querySelector('.sc-panel.sc-open')) fab.click();
+    // Nút mở chat
+    document.getElementById('open-chat').addEventListener('click', () => {
+      const fab = document.querySelector('.sc-fab');
+      if (fab && !document.querySelector('.sc-panel.sc-open')) {
+        fab.click();
+      }
     });
   </script>
 </body>
