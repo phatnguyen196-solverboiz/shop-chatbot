@@ -1,0 +1,23 @@
+{
+  "name": "shop-chatbot",
+  "version": "1.0.0",
+  "description": "Nhẹ, bảo mật, nhúng được vào mọi trang web - Chatbot AI CSKH & bán hàng dùng Google Gemini API",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node test.js"
+  },
+  "keywords": [
+    "chatbot",
+    "gemini",
+    "ai-agent",
+    "customer-service",
+    "widget",
+    "ecommerce"
+  ],
+  "author": "phatnguyen196-solverboiz",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

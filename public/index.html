@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cà Phê Nhà Mộc - Cà phê rang xay &amp; dụng cụ pha chế</title>
+  <style>
+    :root { --brown: #8b5a2b; --dark: #2b1d12; --cream: #f6f4f1; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color: var(--dark); background: #fff; line-height: 1.5; }
+    header { display: flex; justify-content: space-between; align-items: center; padding: 18px 6vw; border-bottom: 1px solid #eee; }
+    .logo { font-weight: 800; font-size: 1.25rem; color: var(--brown); }
+    header span { color: #7a6f63; font-size: .95rem; }
+    .hero { background: linear-gradient(135deg, #3b2616, #8b5a2b); color: #fff; padding: 72px 6vw; }
+    .hero h1 { font-size: clamp(1.8rem, 4vw, 2.8rem); max-width: 640px; line-height: 1.2; }
+    .hero p { margin-top: 14px; max-width: 520px; opacity: .9; }
+    .hero button { margin-top: 24px; background: #fff; color: var(--brown); border: 0; border-radius: 999px; padding: 12px 24px; font-weight: 700; font-size: 1rem; cursor: pointer; }
+    main { padding: 56px 6vw; }
+    h2 { font-size: 1.6rem; margin-bottom: 24px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; }
+    .card { background: var(--cream); border-radius: 14px; padding: 20px; display: flex; flex-direction: column; gap: 8px; }
+    .card h3 { font-size: 1.05rem; }
+    .card p { color: #5b5047; font-size: .92rem; flex: 1; }
+    .price { font-weight: 800; color: var(--brown); font-size: 1.1rem; }
+    .tag { align-self: flex-start; font-size: .75rem; font-weight: 700; padding: 3px 10px; border-radius: 999px; background: #e3f3e3; color: #226622; }
+    .tag.out { background: #fdecea; color: #8a1c14; }
+    footer { padding: 32px 6vw; background: var(--dark); color: #d9cfc4; font-size: .92rem; }
+    footer strong { color: #fff; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">☕ Cà Phê Nhà Mộc</div>
+    <span id="hours"></span>
+  </header>
+
+  <section class="hero">
+    <h1>Cà phê rang xay thơm đậm, giao tận nhà</h1>
+    <p>Hỏi trợ lý ở góc phải màn hình để được tư vấn chọn loại cà phê hợp khẩu vị, xem giá và chính sách giao hàng.</p>
+    <button type="button" id="open-chat">Chat với trợ lý ngay</button>
+  </section>
+
+  <main>
+    <h2>Sản phẩm</h2>
+    <div class="grid" id="products">Đang tải sản phẩm...</div>
+  </main>
+
+  <footer>
+    <p><strong id="shop-name"></strong> - Hotline: <span id="hotline"></span></p>
+    <p>Đây là trang demo. Thay thông tin trong <code>products.json</code> bằng dữ liệu shop của bạn.</p>
+  </footer>
+
+  <!-- CHỈ CẦN MỘT DÒNG NÀY để có chatbot trên web của bạn -->
+  <script src="/chatbot.js" defer></script>
+
+  <script>
+    var vnd = function (n) { return n.toLocaleString('vi-VN') + 'đ'; };
+
+    fetch('/api/products')
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        document.getElementById('shop-name').textContent = data.shop.name;
+        document.getElementById('hotline').textContent = data.shop.hotline;
+        document.getElementById('hours').textContent = 'Hỗ trợ ' + data.shop.supportHours;
+
+        var grid = document.getElementById('products');
+        grid.textContent = '';
+        data.products.forEach(function (p) {
+          var card = document.createElement('div');
+          card.className = 'card';
+
+          var tag = document.createElement('span');
+          tag.className = 'tag' + (p.stock > 0 ? '' : ' out');
+          tag.textContent = p.stock > 0 ? 'Còn hàng' : 'Hết hàng';
+
+          var name = document.createElement('h3');
+          name.textContent = p.name;
+          var desc = document.createElement('p');
+          desc.textContent = p.description;
+          var price = document.createElement('div');
+          price.className = 'price';
+          price.textContent = vnd(p.price);
+
+          [tag, name, desc, price].forEach(function (n) { card.appendChild(n); });
+          grid.appendChild(card);
+        });
+      })
+      .catch(function () {
+        document.getElementById('products').textContent = 'Không tải được danh sách sản phẩm.';
+      });
+
+    document.getElementById('open-chat').addEventListener('click', function () {
+      var fab = document.querySelector('.sc-fab');
+      if (fab && !document.querySelector('.sc-panel.sc-open')) fab.click();
+    });
+  </script>
+</body>
+</html>

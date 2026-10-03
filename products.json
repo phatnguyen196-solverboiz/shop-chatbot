@@ -1,0 +1,64 @@
+{
+  "shop": {
+    "name": "Cà Phê Nhà Mộc",
+    "about": "Cửa hàng cà phê rang xay và dụng cụ pha chế (dữ liệu demo, hãy thay bằng thông tin shop của bạn).",
+    "hotline": "0900 000 000",
+    "zalo": "zalo.me/0900000000",
+    "supportHours": "8h - 21h mỗi ngày"
+  },
+  "policies": {
+    "shipping": "Phí ship đồng giá 25.000đ toàn quốc. Miễn phí ship cho đơn từ 299.000đ. Giao hàng trong 1-3 ngày làm việc (nội thành thường trong ngày).",
+    "returns": "Đổi trả trong 7 ngày nếu sản phẩm lỗi hoặc giao sai. Sản phẩm cà phê đã mở túi không áp dụng đổi trả trừ khi có lỗi từ shop.",
+    "payment": "Thanh toán khi nhận hàng (COD) hoặc chuyển khoản ngân hàng."
+  },
+  "products": [
+    {
+      "id": "robusta-500",
+      "name": "Cà phê Robusta rang xay 500g",
+      "price": 120000,
+      "stock": 40,
+      "description": "Vị đậm, đắng mạnh, hậu ngọt, ít chua. Hợp pha phin kiểu truyền thống.",
+      "keywords": ["robusta", "dam", "dang"]
+    },
+    {
+      "id": "arabica-500",
+      "name": "Cà phê Arabica Cầu Đất 500g",
+      "price": 185000,
+      "stock": 25,
+      "description": "Vị chua thanh, hương hoa quả, hậu ngọt nhẹ. Hợp pha pour over hoặc máy espresso.",
+      "keywords": ["arabica", "cau dat", "chua"]
+    },
+    {
+      "id": "blend-500",
+      "name": "Cà phê Blend Nhà Mộc 500g",
+      "price": 150000,
+      "stock": 0,
+      "description": "Phối 70% Robusta + 30% Arabica, cân bằng giữa đậm và thơm.",
+      "keywords": ["blend", "phoi"]
+    },
+    {
+      "id": "coldbrew-1l",
+      "name": "Cold brew đóng chai 1 lít",
+      "price": 95000,
+      "stock": 18,
+      "description": "Ủ lạnh 18 tiếng, vị mượt, ít đắng. Bảo quản lạnh, dùng trong 7 ngày.",
+      "keywords": ["cold brew", "coldbrew", "chai", "ua lanh"]
+    },
+    {
+      "id": "phin-nhom",
+      "name": "Phin nhôm size M",
+      "price": 45000,
+      "stock": 100,
+      "description": "Phin nhôm dày, pha cho 1-2 người.",
+      "keywords": ["phin", "nhom"]
+    },
+    {
+      "id": "french-press",
+      "name": "Bình French Press 600ml",
+      "price": 250000,
+      "stock": 12,
+      "description": "Thân thủy tinh chịu nhiệt, khung inox, pha 2-3 ly.",
+      "keywords": ["french press", "binh", "thuy tinh"]
+    }
+  ]
+}
