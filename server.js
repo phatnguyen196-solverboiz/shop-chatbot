@@ -34,7 +34,7 @@ const env = (name, fallback = '') => (process.env[name] ?? fallback).toString().
 const CONFIG = {
   port: Number(env('PORT')) || 3000,
   apiKey: env('GEMINI_API_KEY'),
-  model: env('GEMINI_MODEL', 'gemini-2.5-flash'),
+  model: env('GEMINI_MODEL', 'gemini-3.1-flash-lite'),
   // Gemini 2.5 tính token "suy nghĩ" vào giới hạn đầu ra. 0 = tắt suy nghĩ (nhanh, rẻ, không bị cụt).
   // Để trống nếu model bạn dùng không hỗ trợ thinkingConfig.
   thinkingBudget: env('GEMINI_THINKING_BUDGET') === '' ? null : Number(env('GEMINI_THINKING_BUDGET')),
@@ -109,8 +109,16 @@ class GeminiError extends Error {
   }
 }
 
-async function callGeminiOnce(messages) {
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(CONFIG.model)}:generateContent`;
+const FALLBACK_MODELS = [
+  CONFIG.model,
+  'gemini-3.1-flash-lite',
+  'gemini-3.5-flash-lite',
+  'gemini-3.8-flash',
+  'gemini-flash-latest'
+].filter((v, i, a) => v && a.indexOf(v) === i);
+
+async function callGeminiOnce(messages, modelName = CONFIG.model) {
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(modelName)}:generateContent`;
   const generationConfig = { temperature: 0.4, maxOutputTokens: 2048 };
   if (Number.isFinite(CONFIG.thinkingBudget)) {
     generationConfig.thinkingConfig = { thinkingBudget: CONFIG.thinkingBudget };
@@ -130,12 +138,12 @@ async function callGeminiOnce(messages) {
     });
   } catch (err) {
     // Lỗi mạng hoặc hết thời gian chờ -> có thể thử lại
-    throw new GeminiError(`Không gọi được Gemini: ${err.message}`, { retryable: true });
+    throw new GeminiError(`Không gọi được Gemini (${modelName}): ${err.message}`, { retryable: true });
   }
 
   if (!res.ok) {
     const detail = (await res.text().catch(() => '')).slice(0, 300);
-    throw new GeminiError(`Gemini trả lỗi ${res.status}: ${detail}`, {
+    throw new GeminiError(`Gemini (${modelName}) trả lỗi ${res.status}: ${detail}`, {
       status: res.status,
       retryable: RETRYABLE_STATUS.has(res.status),
     });
@@ -153,7 +161,7 @@ async function callGeminiOnce(messages) {
     .trim();
 
   if (!text) {
-    throw new GeminiError(`Gemini trả về nội dung rỗng (finishReason: ${candidate?.finishReason || 'không rõ'}).`, {
+    throw new GeminiError(`Gemini (${modelName}) trả về nội dung rỗng (finishReason: ${candidate?.finishReason || 'không rõ'}).`, {
       status: 502,
     });
   }
@@ -161,16 +169,23 @@ async function callGeminiOnce(messages) {
   return candidate.finishReason === 'MAX_TOKENS' ? `${text}…` : text;
 }
 
-/** Gọi Gemini, tự thử lại khi gặp lỗi tạm thời (429/5xx/mạng) với thời gian chờ tăng dần. */
+/** Gọi Gemini, tự động thử các model khả dụng và tự thử lại khi gặp lỗi tạm thời. */
 async function askGemini(messages) {
   let lastErr;
-  for (let attempt = 0; attempt <= CONFIG.geminiRetries; attempt++) {
-    try {
-      return await callGeminiOnce(messages);
-    } catch (err) {
-      lastErr = err;
-      if (!err.retryable || attempt === CONFIG.geminiRetries) break;
-      await sleep(500 * 2 ** attempt + Math.random() * 250);
+  for (const model of FALLBACK_MODELS) {
+    for (let attempt = 0; attempt <= CONFIG.geminiRetries; attempt++) {
+      try {
+        return await callGeminiOnce(messages, model);
+      } catch (err) {
+        lastErr = err;
+        // Nếu lỗi 404 (model ngừng hoạt động) hoặc 503 (quá tải), chuyển ngay sang model dự phòng kế tiếp
+        if (err.status === 404 || err.status === 503) {
+          console.warn(`[chat] Model ${model} gặp lỗi ${err.status}, tự động chuyển sang model dự phòng tiếp theo...`);
+          break;
+        }
+        if (!err.retryable || attempt === CONFIG.geminiRetries) break;
+        await sleep(400 * 2 ** attempt + Math.random() * 200);
+      }
     }
   }
   throw lastErr;
@@ -213,6 +228,9 @@ function demoReply(question) {
   if (policies.payment && hasAny(q, ['thanh toan', 'cod', 'chuyen khoan', 'tra tien'])) return policies.payment;
   if (hasAny(q, ['gia', 'bao nhieu', 'san pham', 'ban gi', 'menu', 'co gi', 'ban chay', 'nhung gi'])) {
     return `Bên mình đang có:\n${products.map(productLine).join('\n')}`;
+  }
+  if (hasAny(q, ['dia chi', 'o dau', 'shop o dau', 'dia diem', 'vi tri', 'quan o dau', 'o dau vay'])) {
+    return `${shop.name} tại địa chỉ: ${shop.address || '123 Đường Cà Phê, Quận 1, TP.HCM'}. Giờ mở cửa: ${shop.supportHours}. Hotline: ${shop.hotline}.`;
   }
   if (hasAny(q, ['xin chao', 'chao', 'hello', 'hi', 'alo'])) {
     return `Chào bạn! Mình là trợ lý của ${shop.name}. Bạn cần mình tư vấn gì ạ?`;
@@ -386,11 +404,17 @@ async function handleChat(req, res) {
     return sendJson(req, res, 200, { reply: await askGemini(messages) });
   } catch (err) {
     console.error('[chat] Lỗi gọi Gemini:', err.message);
+    const lastQuestion = messages[messages.length - 1].text;
+    const fallbackAnswer = demoReply(lastQuestion);
+    // Nếu từ khóa có thể trả lời trực tiếp (sản phẩm, giá, địa chỉ, phí ship, đổi trả)
+    if (fallbackAnswer && !fallbackAnswer.startsWith('Mình chưa rõ ý')) {
+      return sendJson(req, res, 200, { reply: fallbackAnswer });
+    }
     const busy = err.status === 429;
     return sendJson(req, res, busy ? 503 : 502, {
       error: busy
-        ? 'Trợ lý đang quá tải, bạn vui lòng thử lại sau ít phút.'
-        : `Trợ lý đang gặp sự cố, bạn vui lòng thử lại hoặc gọi hotline ${DATA.shop.hotline}.`,
+        ? 'Trợ lý đang bận xử lý nhiều tin nhắn, bạn vui lòng nhắn lại sau giây lát nhé.'
+        : `Trợ lý đang gặp sự cố kết nối, bạn vui lòng thử lại hoặc gọi hotline ${DATA.shop.hotline}.`,
     });
   }
 }
