@@ -15,50 +15,62 @@
     {
       "id": "robusta-500",
       "name": "Cà phê Robusta rang xay 500g",
+      "category": "coffee",
       "price": 120000,
       "stock": 40,
-      "description": "Vị đậm, đắng mạnh, hậu ngọt, ít chua. Hợp pha phin kiểu truyền thống.",
-      "keywords": ["robusta", "dam", "dang"]
+      "image": "https://images.unsplash.com/photo-1559525839-b184a4d698c7?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80",
+      "description": "Vị đậm đà, đắng mạnh mẽ, hậu ngọt sâu và ít chua. Rất thích hợp pha phin truyền thống hoặc cà phê sữa đá.",
+      "keywords": ["robusta", "dam", "dang", "phin", "sua da"]
     },
     {
       "id": "arabica-500",
       "name": "Cà phê Arabica Cầu Đất 500g",
+      "category": "coffee",
       "price": 185000,
       "stock": 25,
-      "description": "Vị chua thanh, hương hoa quả, hậu ngọt nhẹ. Hợp pha pour over hoặc máy espresso.",
-      "keywords": ["arabica", "cau dat", "chua"]
+      "image": "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80",
+      "description": "Vị chua thanh tự nhiên, ngát hương hoa quả dại, hậu vị ngọt thanh lịch. Phù hợp cho pour over, drip hoặc espresso.",
+      "keywords": ["arabica", "cau dat", "chua", "pour over", "espresso"]
     },
     {
       "id": "blend-500",
       "name": "Cà phê Blend Nhà Mộc 500g",
+      "category": "coffee",
       "price": 150000,
       "stock": 0,
-      "description": "Phối 70% Robusta + 30% Arabica, cân bằng giữa đậm và thơm.",
-      "keywords": ["blend", "phoi"]
+      "image": "https://images.unsplash.com/photo-1495474472202-8f3871f251c6?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80",
+      "description": "Tỉ lệ vàng 70% Robusta & 30% Arabica, dung hòa vị đậm đà truyền thống với hương thơm quyến rũ.",
+      "keywords": ["blend", "phoi", "70/30", "moc"]
     },
     {
       "id": "coldbrew-1l",
-      "name": "Cold brew đóng chai 1 lít",
+      "name": "Cold Brew Ủ Lạnh Đóng Chai 1 Lít",
+      "category": "coldbrew",
       "price": 95000,
       "stock": 18,
-      "description": "Ủ lạnh 18 tiếng, vị mượt, ít đắng. Bảo quản lạnh, dùng trong 7 ngày.",
-      "keywords": ["cold brew", "coldbrew", "chai", "ua lanh"]
+      "image": "https://images.unsplash.com/photo-1517701550927-30cf4ba1dba5?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80",
+      "description": "Ủ lạnh thủ công liên tục suốt 18 tiếng từ hạt Arabica Cầu Đất. Vị mượt, êm, thanh mát và bảo quản lạnh 7 ngày.",
+      "keywords": ["cold brew", "coldbrew", "chai", "u lanh", "1 lit"]
     },
     {
       "id": "phin-nhom",
-      "name": "Phin nhôm size M",
+      "name": "Phin Pha Cà Phê Nhôm Cao Cấp Size M",
+      "category": "tools",
       "price": 45000,
       "stock": 100,
-      "description": "Phin nhôm dày, pha cho 1-2 người.",
-      "keywords": ["phin", "nhom"]
+      "image": "https://images.unsplash.com/photo-1544787219-7f47ccb76574?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80",
+      "description": "Chất liệu nhôm anode dày dặn, lỗ đục đều giúp chiết xuất trọn vẹn hương vị tinh túy của từng giọt cà phê.",
+      "keywords": ["phin", "nhom", "size m", "dung cu"]
     },
     {
       "id": "french-press",
-      "name": "Bình French Press 600ml",
+      "name": "Bình Pha French Press Thủy Tinh 600ml",
+      "category": "tools",
       "price": 250000,
       "stock": 12,
-      "description": "Thân thủy tinh chịu nhiệt, khung inox, pha 2-3 ly.",
-      "keywords": ["french press", "binh", "thuy tinh"]
+      "image": "https://images.unsplash.com/photo-1595928642581-f50f4f3453a5?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80",
+      "description": "Thân thủy tinh Borosilicate chịu nhiệt cao, piston lưới lọc inox 304 chống cặn mịn, pha từ 2-3 tách cà phê.",
+      "keywords": ["french press", "binh", "thuy tinh", "piston"]
     }
   ]
 }

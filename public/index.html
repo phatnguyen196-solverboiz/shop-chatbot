@@ -3,23 +3,32 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Cà Phê Nhà Mộc - Cà phê rang xay & dụng cụ pha chế</title>
+  <title>Cà Phê Nhà Mộc - Cà phê nguyên chất & Dụng cụ pha chế</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root { 
       --primary: #8b5a2b; 
       --primary-hover: #704721;
-      --dark: #1a1a1a; 
-      --bg-color: #f8f9fa;
+      --primary-light: #fdf8f4;
+      --dark: #1e1e1e; 
+      --bg-color: #faf8f5;
       --card-bg: #ffffff;
-      --text-main: #333333;
-      --text-muted: #666666;
+      --text-main: #2b2b2b;
+      --text-muted: #6b7280;
+      --border: #ede8e1;
+      --success: #10b981;
+      --danger: #ef4444;
+      --radius: 16px;
+      --shadow-sm: 0 2px 8px rgba(0,0,0,0.04);
+      --shadow-md: 0 8px 24px rgba(0,0,0,0.06);
+      --shadow-lg: 0 16px 40px rgba(0,0,0,0.1);
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
     body { 
-      font-family: 'Inter', sans-serif; 
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif; 
       color: var(--text-main); 
       background: var(--bg-color); 
       line-height: 1.6; 
@@ -31,269 +40,1306 @@
       display: flex; 
       justify-content: space-between; 
       align-items: center; 
-      padding: 16px 5%; 
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(10px);
-      border-bottom: 1px solid #eaeaea; 
+      padding: 18px 6%; 
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border); 
       position: sticky;
       top: 0;
-      z-index: 100;
+      z-index: 900;
     }
     .logo { 
       font-weight: 800; 
-      font-size: 1.4rem; 
+      font-size: 1.45rem; 
       color: var(--primary); 
       display: flex;
       align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      letter-spacing: -0.5px;
+    }
+    nav.nav-links {
+      display: flex;
+      gap: 28px;
+    }
+    nav.nav-links a {
+      color: var(--text-main);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.95rem;
+      transition: color 0.2s;
+    }
+    nav.nav-links a:hover {
+      color: var(--primary);
+    }
+    .header-actions { display: flex; gap: 16px; align-items: center; }
+    .header-hotline {
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: #f3f0ea;
+      padding: 6px 14px;
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .cart-btn-header {
+      position: relative;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 8px 18px;
+      display: flex;
+      align-items: center;
       gap: 8px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--dark);
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: var(--shadow-sm);
     }
-    .header-right { display: flex; gap: 20px; align-items: center; }
-    .header-right span { color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
-    .cart-btn {
-      background: none; border: none; font-size: 1.2rem; cursor: pointer; color: var(--dark);
-      transition: transform 0.2s;
+    .cart-btn-header:hover {
+      background: var(--primary-light);
+      border-color: var(--primary);
+      color: var(--primary);
     }
-    .cart-btn:hover { transform: scale(1.1); color: var(--primary); }
+    .cart-badge {
+      background: var(--primary);
+      color: white;
+      font-size: 0.75rem;
+      font-weight: 800;
+      padding: 2px 7px;
+      border-radius: 999px;
+      min-width: 20px;
+      text-align: center;
+      transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .cart-badge.bump {
+      transform: scale(1.35);
+    }
 
     /* Hero Section */
     .hero { 
-      background: linear-gradient(rgba(26, 26, 26, 0.7), rgba(26, 26, 26, 0.8)), 
-                  url('https://images.unsplash.com/photo-1497935586351-b67a49e012bf?ixlib=rb-1.2.1&auto=format&fit=crop&w=1600&q=80') center/cover no-repeat;
+      background: linear-gradient(rgba(18, 14, 11, 0.75), rgba(18, 14, 11, 0.82)), 
+                  url('https://images.unsplash.com/photo-1447933601403-0c6688de566e?ixlib=rb-1.2.1&auto=format&fit=crop&w=1600&q=80') center/cover no-repeat;
       color: #fff; 
-      padding: 100px 5%; 
+      padding: 120px 6% 110px; 
       text-align: center;
       display: flex;
       flex-direction: column;
       align-items: center;
     }
-    .hero h1 { font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 800; max-width: 800px; line-height: 1.2; margin-bottom: 16px; }
-    .hero p { font-size: 1.1rem; max-width: 600px; opacity: 0.9; margin-bottom: 32px; font-weight: 400; }
-    .hero button { 
+    .hero-tag {
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(8px);
+      padding: 6px 16px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      margin-bottom: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+    }
+    .hero h1 { 
+      font-size: clamp(2.2rem, 5.5vw, 3.8rem); 
+      font-weight: 800; 
+      max-width: 860px; 
+      line-height: 1.18; 
+      margin-bottom: 20px;
+      letter-spacing: -1px;
+    }
+    .hero p { 
+      font-size: 1.15rem; 
+      max-width: 640px; 
+      opacity: 0.92; 
+      margin-bottom: 36px; 
+      font-weight: 400; 
+      line-height: 1.7;
+    }
+    .hero-buttons {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .btn {
+      border: none;
+      border-radius: 999px;
+      padding: 15px 32px;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.25s ease;
+      text-decoration: none;
+    }
+    .btn-primary { 
       background: var(--primary); 
       color: #fff; 
-      border: none; 
-      border-radius: 999px; 
-      padding: 14px 32px; 
-      font-weight: 600; 
-      font-size: 1.05rem; 
-      cursor: pointer; 
-      transition: all 0.3s ease;
-      box-shadow: 0 4px 15px rgba(139, 90, 43, 0.4);
+      box-shadow: 0 8px 24px rgba(139, 90, 43, 0.45);
     }
-    .hero button:hover { 
+    .btn-primary:hover { 
       background: var(--primary-hover); 
       transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(139, 90, 43, 0.6);
+      box-shadow: 0 12px 28px rgba(139, 90, 43, 0.6);
+    }
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.35);
+    }
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.28);
+      transform: translateY(-2px);
     }
 
-    /* Main Content */
-    main { padding: 60px 5%; max-width: 1400px; margin: 0 auto; }
-    .section-title { 
-      font-size: 2rem; 
-      font-weight: 700; 
-      margin-bottom: 30px; 
-      color: var(--dark);
-      text-align: center;
+    /* Value Highlights */
+    .highlights {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 24px;
+      max-width: 1300px;
+      margin: -40px auto 60px;
+      padding: 0 6%;
+      position: relative;
+      z-index: 10;
     }
-    .section-title::after {
-      content: '';
-      display: block;
-      width: 60px;
-      height: 4px;
+    .highlight-card {
+      background: #fff;
+      padding: 26px 22px;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-md);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      border: 1px solid var(--border);
+      transition: transform 0.25s ease;
+    }
+    .highlight-card:hover {
+      transform: translateY(-4px);
+    }
+    .highlight-icon {
+      font-size: 2rem;
+      background: var(--primary-light);
+      width: 54px;
+      height: 54px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .highlight-text h4 {
+      font-size: 1.02rem;
+      font-weight: 700;
+      color: var(--dark);
+      margin-bottom: 2px;
+    }
+    .highlight-text p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    /* Main Container */
+    main { padding: 40px 6% 80px; max-width: 1360px; margin: 0 auto; }
+
+    .section-header { 
+      text-align: center;
+      margin-bottom: 40px;
+    }
+    .section-subtitle {
+      color: var(--primary);
+      font-weight: 700;
+      text-transform: uppercase;
+      font-size: 0.85rem;
+      letter-spacing: 1.5px;
+      margin-bottom: 8px;
+    }
+    .section-title { 
+      font-size: 2.2rem; 
+      font-weight: 800; 
+      color: var(--dark);
+      letter-spacing: -0.5px;
+    }
+
+    /* Filter & Search Bar */
+    .catalog-controls {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      margin-bottom: 36px;
+    }
+    .search-box {
+      max-width: 500px;
+      margin: 0 auto;
+      width: 100%;
+      position: relative;
+    }
+    .search-box input {
+      width: 100%;
+      padding: 14px 20px 14px 44px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: #fff;
+      font-size: 0.95rem;
+      font-family: inherit;
+      outline: none;
+      box-shadow: var(--shadow-sm);
+      transition: all 0.2s;
+    }
+    .search-box input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(139, 90, 43, 0.12);
+    }
+    .search-box svg {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 18px;
+      height: 18px;
+      fill: var(--text-muted);
+    }
+    .category-chips {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .cat-btn {
+      background: #fff;
+      border: 1px solid var(--border);
+      padding: 10px 22px;
+      border-radius: 999px;
+      font-size: 0.92rem;
+      font-weight: 600;
+      color: var(--text-main);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .cat-btn:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+    .cat-btn.active {
       background: var(--primary);
-      margin: 12px auto 0;
-      border-radius: 2px;
+      color: #fff;
+      border-color: var(--primary);
+      box-shadow: 0 4px 12px rgba(139, 90, 43, 0.25);
     }
 
     /* Product Grid */
     .grid { 
       display: grid; 
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
-      gap: 30px; 
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); 
+      gap: 32px; 
     }
     .card { 
       background: var(--card-bg); 
-      border-radius: 16px; 
+      border-radius: var(--radius); 
       overflow: hidden;
       display: flex; 
       flex-direction: column; 
-      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03);
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      border: 1px solid #f0f0f0;
+      box-shadow: var(--shadow-sm);
+      transition: all 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
+      border: 1px solid var(--border);
+      position: relative;
     }
     .card:hover {
       transform: translateY(-8px);
-      box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
+      box-shadow: var(--shadow-lg);
+      border-color: #dfd7cc;
     }
     .card-img-wrap {
       position: relative;
-      padding-top: 75%; /* 4:3 Aspect Ratio */
+      padding-top: 68%;
       overflow: hidden;
-      background: #eee;
+      background: #eae5de;
     }
     .card-img-wrap img {
       position: absolute;
       top: 0; left: 0; width: 100%; height: 100%;
       object-fit: cover;
-      transition: transform 0.5s;
+      transition: transform 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
     }
     .card:hover .card-img-wrap img {
-      transform: scale(1.05);
+      transform: scale(1.08);
     }
     .tag { 
       position: absolute;
-      top: 12px;
-      right: 12px;
-      font-size: 0.75rem; 
+      top: 14px;
+      left: 14px;
+      font-size: 0.76rem; 
       font-weight: 700; 
-      padding: 6px 12px; 
+      padding: 5px 12px; 
       border-radius: 999px; 
       background: rgba(255, 255, 255, 0.95); 
-      color: #059669; 
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      color: var(--success); 
+      box-shadow: 0 2px 6px rgba(0,0,0,0.12);
       z-index: 10;
     }
-    .tag.out { color: #dc2626; }
-    
+    .tag.out { color: var(--danger); }
+
     .card-content {
       padding: 24px;
       display: flex;
       flex-direction: column;
       flex: 1;
     }
-    .card h3 { font-size: 1.15rem; font-weight: 700; margin-bottom: 8px; color: var(--dark); line-height: 1.3;}
-    .card p { color: var(--text-muted); font-size: 0.95rem; flex: 1; margin-bottom: 16px; }
+    .card h3 { 
+      font-size: 1.18rem; 
+      font-weight: 700; 
+      margin-bottom: 8px; 
+      color: var(--dark); 
+      line-height: 1.35;
+    }
+    .card p { 
+      color: var(--text-muted); 
+      font-size: 0.92rem; 
+      flex: 1; 
+      margin-bottom: 20px; 
+      line-height: 1.6;
+    }
     
     .card-footer {
       display: flex;
-      justify-content: space-between;
-      align-items: center;
+      flex-direction: column;
+      gap: 14px;
       margin-top: auto;
       padding-top: 16px;
-      border-top: 1px solid #f0f0f0;
+      border-top: 1px solid var(--border);
     }
-    .price { font-weight: 800; color: var(--primary); font-size: 1.25rem; }
+    .price-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+    }
+    .price { 
+      font-weight: 800; 
+      color: var(--primary); 
+      font-size: 1.35rem; 
+      letter-spacing: -0.5px;
+    }
+    .stock-info {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+    }
+    .action-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+    }
     .buy-btn {
-      background: #f3f4f6;
-      color: var(--text-main);
+      background: var(--dark);
+      color: #fff;
       border: none;
-      border-radius: 8px;
-      padding: 8px 16px;
+      border-radius: 10px;
+      padding: 10px 18px;
       font-weight: 600;
-      font-size: 0.9rem;
+      font-size: 0.92rem;
       cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+    .buy-btn:hover:not(:disabled) {
+      background: var(--primary);
+    }
+    .buy-btn:disabled {
+      background: #e5e0d8;
+      color: #a0988e;
+      cursor: not-allowed;
+    }
+    .ask-btn {
+      background: var(--primary-light);
+      color: var(--primary);
+      border: 1px solid #ebd9c8;
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-weight: 600;
+      font-size: 0.92rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .ask-btn:hover {
+      background: #f7e8db;
+    }
+
+    /* Customer Reviews */
+    .reviews-section {
+      background: #fff;
+      padding: 80px 6%;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      margin-top: 40px;
+    }
+    .reviews-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 28px;
+      max-width: 1260px;
+      margin: 0 auto;
+    }
+    .review-card {
+      background: var(--bg-color);
+      border-radius: var(--radius);
+      padding: 28px;
+      border: 1px solid var(--border);
+    }
+    .stars { color: #f59e0b; margin-bottom: 12px; font-size: 1.1rem; }
+    .review-text { font-size: 0.95rem; color: #4b5563; margin-bottom: 18px; font-style: italic; }
+    .reviewer { display: flex; align-items: center; gap: 12px; }
+    .reviewer-avatar {
+      width: 42px; height: 42px; border-radius: 50%; background: var(--primary); color: #fff;
+      display: flex; align-items: center; justify-content: center; font-weight: 700;
+    }
+    .reviewer-name { font-weight: 700; font-size: 0.95rem; color: var(--dark); }
+    .reviewer-tag { font-size: 0.8rem; color: var(--text-muted); }
+
+    /* FAQ Section */
+    .faq-section {
+      padding: 80px 6%;
+      max-width: 860px;
+      margin: 0 auto;
+    }
+    .faq-list { display: flex; flex-direction: column; gap: 14px; }
+    .faq-item {
+      background: #fff;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      overflow: hidden;
+    }
+    .faq-question {
+      padding: 18px 22px;
+      font-weight: 700;
+      color: var(--dark);
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      user-select: none;
       transition: background 0.2s;
     }
-    .card:hover .buy-btn {
-      background: var(--primary);
-      color: white;
+    .faq-question:hover { background: var(--primary-light); }
+    .faq-answer {
+      padding: 0 22px 18px;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      display: none;
+      line-height: 1.7;
     }
+    .faq-item.active .faq-answer { display: block; }
+    .faq-icon { transition: transform 0.2s; }
+    .faq-item.active .faq-icon { transform: rotate(180deg); }
 
     /* Footer */
     footer { 
-      padding: 40px 5%; 
-      background: var(--dark); 
-      color: #9ca3af; 
+      padding: 60px 6% 40px; 
+      background: #141210; 
+      color: #a39c94; 
+      font-size: 0.92rem;
+    }
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 2fr repeat(auto-fit, minmax(180px, 1fr));
+      gap: 40px;
+      max-width: 1260px;
+      margin: 0 auto 50px;
+    }
+    .footer-brand h3 { color: #fff; font-size: 1.35rem; margin-bottom: 12px; font-weight: 800; }
+    .footer-brand p { max-width: 380px; line-height: 1.7; }
+    .footer-col h4 { color: #fff; font-size: 1rem; margin-bottom: 18px; font-weight: 700; }
+    .footer-col ul { list-style: none; }
+    .footer-col ul li { margin-bottom: 10px; }
+    .footer-col ul li a { color: #a39c94; text-decoration: none; transition: color 0.2s; }
+    .footer-col ul li a:hover { color: #fff; }
+    .footer-bottom {
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      padding-top: 30px;
+      text-align: center;
+      font-size: 0.85rem;
+      color: #78716a;
+    }
+
+    /* Sliding Cart Drawer */
+    .cart-drawer-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.45);
+      backdrop-filter: blur(4px);
+      z-index: 1000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+    .cart-drawer-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .cart-drawer {
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: 440px;
+      max-width: 90vw;
+      height: 100%;
+      background: #fff;
+      z-index: 1001;
+      box-shadow: -8px 0 30px rgba(0, 0, 0, 0.15);
+      transform: translateX(100%);
+      transition: transform 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
+      display: flex;
+      flex-direction: column;
+    }
+    .cart-drawer.active {
+      transform: translateX(0);
+    }
+    .cart-header {
+      padding: 22px 24px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .cart-header h3 { font-size: 1.25rem; font-weight: 800; color: var(--dark); }
+    .close-cart-btn {
+      background: none; border: none; font-size: 1.6rem; cursor: pointer; color: var(--text-muted);
+      line-height: 1; width: 32px; height: 32px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .close-cart-btn:hover { background: #f3f0ea; color: var(--dark); }
+
+    .cart-items {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+    .cart-item {
+      display: flex;
+      gap: 14px;
+      align-items: center;
+      padding-bottom: 16px;
+      border-bottom: 1px solid #f3f0ea;
+    }
+    .cart-item img {
+      width: 68px;
+      height: 68px;
+      border-radius: 10px;
+      object-fit: cover;
+      flex-shrink: 0;
+    }
+    .cart-item-details { flex: 1; }
+    .cart-item-title { font-weight: 700; font-size: 0.95rem; color: var(--dark); margin-bottom: 4px; }
+    .cart-item-price { font-weight: 800; color: var(--primary); font-size: 0.98rem; }
+    .cart-qty-ctrl {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 6px;
+    }
+    .qty-btn {
+      width: 26px; height: 26px; border: 1px solid var(--border); background: #fff;
+      border-radius: 6px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center;
+    }
+    .qty-btn:hover { background: #f3f0ea; }
+    .cart-item-qty { font-size: 0.9rem; font-weight: 600; min-width: 20px; text-align: center; }
+    .remove-item-btn {
+      background: none; border: none; color: #9ca3af; cursor: pointer; font-size: 1.1rem; padding: 4px;
+    }
+    .remove-item-btn:hover { color: var(--danger); }
+
+    .cart-empty {
+      text-align: center;
+      color: var(--text-muted);
+      margin-top: 60px;
+    }
+    .cart-empty-icon { font-size: 3.5rem; margin-bottom: 12px; }
+
+    .cart-footer {
+      padding: 22px 24px;
+      border-top: 1px solid var(--border);
+      background: #faf8f5;
+    }
+    .cart-summary-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 12px;
       font-size: 0.95rem;
+      color: var(--text-muted);
+    }
+    .cart-total-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--dark);
+    }
+    .cart-total-row .total-amount { color: var(--primary); }
+    .shipping-hint {
+      background: var(--primary-light);
+      border: 1px dashed #ebd8c7;
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 0.85rem;
+      color: var(--primary);
+      font-weight: 600;
+      margin-bottom: 18px;
       text-align: center;
     }
-    footer strong { color: #f3f4f6; font-size: 1.1rem; display: block; margin-bottom: 8px;}
-    footer p { margin-bottom: 12px; }
-    footer code { background: rgba(255,255,255,0.1); padding: 2px 6px; border-radius: 4px; color: #fff;}
-    
-    @media (max-width: 768px) {
-      .header-right span { display: none; }
-      .hero { padding: 70px 5%; }
+    .checkout-btn {
+      width: 100%;
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      padding: 14px;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 1.05rem;
+      cursor: pointer;
+      margin-bottom: 10px;
+      box-shadow: 0 4px 14px rgba(139, 90, 43, 0.35);
+      transition: all 0.2s;
+    }
+    .checkout-btn:hover { background: var(--primary-hover); }
+    .ask-bot-cart-btn {
+      width: 100%;
+      background: #fff;
+      color: var(--dark);
+      border: 1px solid var(--border);
+      padding: 11px;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 0.92rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+    .ask-bot-cart-btn:hover { background: #f0ebe4; }
+
+    /* Toast Notification */
+    .toast-container {
+      position: fixed;
+      bottom: 24px;
+      left: 24px;
+      z-index: 2000;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .toast {
+      background: #1f2937;
+      color: #fff;
+      padding: 14px 20px;
+      border-radius: 12px;
+      font-size: 0.92rem;
+      font-weight: 600;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.25);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      animation: toastSlide 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    @keyframes toastSlide {
+      from { transform: translateY(50px) scale(0.9); opacity: 0; }
+      to { transform: translateY(0) scale(1); opacity: 1; }
+    }
+
+    @media (max-width: 860px) {
+      nav.nav-links, .header-hotline { display: none; }
+      .hero h1 { font-size: 2.3rem; }
+      .highlights { margin-top: 20px; }
+      .cart-drawer { width: 100%; max-width: 100vw; }
     }
   </style>
 </head>
 <body>
+  <!-- Header -->
   <header>
-    <div class="logo">☕ Nhà Mộc</div>
-    <div class="header-right">
-      <span id="hours">Đang tải...</span>
-      <button class="cart-btn" title="Giỏ hàng">🛒</button>
+    <a href="#" class="logo">☕ Nhà Mộc</a>
+    
+    <nav class="nav-links">
+      <a href="#san-pham">Sản Phẩm</a>
+      <a href="#uu-diem">Về Nhà Mộc</a>
+      <a href="#danh-gia">Đánh Giá</a>
+      <a href="#faq">Câu Hỏi Thường Gặp</a>
+    </nav>
+
+    <div class="header-actions">
+      <div class="header-hotline" id="hotline-badge">
+        <span>📞</span> <span id="header-phone">0900 000 000</span>
+      </div>
+      <button class="cart-btn-header" id="open-cart-btn" aria-label="Xem giỏ hàng">
+        <span>🛒 Giỏ Hàng</span>
+        <span class="cart-badge" id="cart-counter">0</span>
+      </button>
     </div>
   </header>
 
+  <!-- Hero Banner -->
   <section class="hero">
-    <h1>Khơi nguồn năng lượng từ hạt cà phê nguyên chất</h1>
-    <p>Trải nghiệm hương vị cà phê rang xay thủ công đậm đà, giao hàng tận nơi. Hãy hỏi trợ lý ảo để tìm đúng gu của bạn!</p>
-    <button type="button" id="open-chat">Tư vấn chọn vị ngay ✨</button>
+    <div class="hero-tag">🌱 100% Cà phê nguyên chất rang xay mộc thủ công</div>
+    <h1>Khơi Nguồn Cảm Hứng Từ Từng Giọt Cà Phê Mộc</h1>
+    <p>Tuyển chọn từ những nông trại độ cao trên 1500m tại Cầu Đất & Buôn Ma Thuột. Rang mẻ nhỏ tươi mới mỗi tuần mang lại trọn vẹn phong vị mộc mạc nguyên bản.</p>
+    <div class="hero-buttons">
+      <a href="#san-pham" class="btn btn-primary">Khám Phá Menu Ngay ☕</a>
+      <button type="button" class="btn btn-secondary" id="hero-open-chat">Tư Vấn Chọn Vị Với AI ✨</button>
+    </div>
   </section>
 
-  <main>
-    <h2 class="section-title">Sản phẩm nổi bật</h2>
-    <div class="grid" id="products">Đang tải sản phẩm...</div>
+  <!-- Value Highlights -->
+  <section class="highlights" id="uu-diem">
+    <div class="highlight-card">
+      <div class="highlight-icon">🌿</div>
+      <div class="highlight-text">
+        <h4>100% Mộc Nguyên Bản</h4>
+        <p>Không tẩm ướp hương liệu hay chất bảo quản</p>
+      </div>
+    </div>
+    <div class="highlight-card">
+      <div class="highlight-icon">🔥</div>
+      <div class="highlight-text">
+        <h4>Rang Mẻ Nhỏ Thủ Công</h4>
+        <p>Hạt luôn giữ trọn vị tươi mới xuất sắc nhất</p>
+      </div>
+    </div>
+    <div class="highlight-card">
+      <div class="highlight-icon">🚚</div>
+      <div class="highlight-text">
+        <h4>Giao Nhanh Toàn Quốc</h4>
+        <p>Miễn phí giao hàng cho hóa đơn từ 299k</p>
+      </div>
+    </div>
+    <div class="highlight-card">
+      <div class="highlight-icon">🛡️</div>
+      <div class="highlight-text">
+        <h4>Đổi Trả Trong 7 Ngày</h4>
+        <p>Hỗ trợ hoàn tiền nếu không hài lòng chất lượng</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Catalog -->
+  <main id="san-pham">
+    <div class="section-header">
+      <div class="section-subtitle">DANH MỤC TUYỂN CHỌN</div>
+      <h2 class="section-title">Sản Phẩm Cà Phê & Dụng Cụ</h2>
+    </div>
+
+    <!-- Controls -->
+    <div class="catalog-controls">
+      <div class="search-box">
+        <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+        <input type="text" id="search-input" placeholder="Tìm kiếm cà phê Robusta, Arabica, Cold brew, Phin...">
+      </div>
+
+      <div class="category-chips">
+        <button class="cat-btn active" data-cat="all">Tất cả sản phẩm</button>
+        <button class="cat-btn" data-cat="coffee">Cà phê hạt & bột</button>
+        <button class="cat-btn" data-cat="coldbrew">Cold Brew ủ lạnh</button>
+        <button class="cat-btn" data-cat="tools">Dụng cụ pha chế</button>
+      </div>
+    </div>
+
+    <div class="grid" id="products">Đang đồng bộ dữ liệu cửa hàng...</div>
   </main>
 
+  <!-- Reviews Section -->
+  <section class="reviews-section" id="danh-gia">
+    <div class="section-header">
+      <div class="section-subtitle">KHÁCH HÀNG NÓI GÌ</div>
+      <h2 class="section-title">Trải Nghiệm Tại Nhà Mộc</h2>
+    </div>
+
+    <div class="reviews-grid">
+      <div class="review-card">
+        <div class="stars">★★★★★</div>
+        <p class="review-text">"Gói Arabica Cầu Đất thơm nức nở, pha pour over sáng sớm cảm giác sảng khoái cực kỳ. Trợ lý AI tư vấn đúng gu thích chua thanh của mình luôn!"</p>
+        <div class="reviewer">
+          <div class="reviewer-avatar">H</div>
+          <div>
+            <div class="reviewer-name">Hoàng Nam</div>
+            <div class="reviewer-tag">Khách quen tại Hà Nội</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="review-card">
+        <div class="stars">★★★★★</div>
+        <p class="review-text">"Mình hay uống cà phê sữa đậm nên chọn Robusta rang mộc. Vị đậm đắng đầm đà, hậu vị rất sâu. Đóng gói cẩn thận, giao nhanh trong ngày."</p>
+        <div class="reviewer">
+          <div class="reviewer-avatar">T</div>
+          <div>
+            <div class="reviewer-name">Thùy Linh</div>
+            <div class="reviewer-tag">Khách mua tại TP.HCM</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="review-card">
+        <div class="stars">★★★★★</div>
+        <p class="review-text">"Bình French Press cầm chắc tay, lưới lọc cực khít không bị cặn lợn cợn. Chai Cold brew ủ lạnh uống rất mượt và thơm mát!"</p>
+        <div class="reviewer">
+          <div class="reviewer-avatar">M</div>
+          <div>
+            <div class="reviewer-name">Minh Trí</div>
+            <div class="reviewer-tag">Khách mua tại Đà Nẵng</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ Section -->
+  <section class="faq-section" id="faq">
+    <div class="section-header">
+      <div class="section-subtitle">GIẢI ĐÁP THẮC MẮC</div>
+      <h2 class="section-title">Câu Hỏi Thường Gặp</h2>
+    </div>
+
+    <div class="faq-list">
+      <div class="faq-item">
+        <div class="faq-question">
+          <span>Cà phê của Nhà Mộc có bị trộn bắp hay đậu nành không?</span>
+          <span class="faq-icon">▼</span>
+        </div>
+        <div class="faq-answer">
+          Dạ hoàn toàn không! 100% sản phẩm của Nhà Mộc là hạt cà phê nguyên chất, nói không với việc tẩm bơ, bắp, đậu nành hay bất kỳ loại hương liệu tạo mùi nào.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question">
+          <span>Tôi muốn yêu cầu xay theo dụng cụ pha riêng có được không?</span>
+          <span class="faq-icon">▼</span>
+        </div>
+        <div class="faq-answer">
+          Được bạn nhé! Bạn có thể chọn để nguyên hạt hoặc nhờ shop xay theo kích thước chuẩn cho Pha Phin, Espresso, Pour Over (Drip), Cold Brew hay French Press.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question">
+          <span>Chính sách phí vận chuyển và thời gian nhận hàng ra sao?</span>
+          <span class="faq-icon">▼</span>
+        </div>
+        <div class="faq-answer">
+          Phí ship đồng giá 25.000đ toàn quốc và MIỄN PHÍ VẬN CHUYỂN cho tất cả các đơn từ 299.000đ trở lên. Đơn nội thành thường giao trong ngày hoặc 24h.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question">
+          <span>Nếu nhận hàng bị rách túi hoặc không đúng loại thì sao?</span>
+          <span class="faq-icon">▼</span>
+        </div>
+        <div class="faq-answer">
+          Nhà Mộc cam kết hỗ trợ đổi mới hoặc hoàn tiền 100% trong vòng 7 ngày làm việc nếu sản phẩm gặp bất cứ sự cố nào từ phía đóng gói hoặc vận chuyển.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
   <footer>
-    <strong id="shop-name">Cà Phê Nhà Mộc</strong>
-    <p>Hotline: <span id="hotline">...</span></p>
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <h3 id="footer-shop-name">☕ Cà Phê Nhà Mộc</h3>
+        <p id="footer-about">Tự hào mang đến những hạt cà phê rang xay mộc nguyên bản, đậm vị truyền thống và dụng cụ pha chế chuyên nghiệp cho người yêu cà phê.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Liên Hệ</h4>
+        <ul>
+          <li>Hotline: <strong style="color:#fff" id="footer-hotline">0900 000 000</strong></li>
+          <li>Zalo: <span id="footer-zalo">zalo.me/0900000000</span></li>
+          <li>Giờ mở cửa: <span id="footer-hours">8h - 21h mỗi ngày</span></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Chính Sách</h4>
+        <ul>
+          <li><a href="#faq">Chính sách vận chuyển</a></li>
+          <li><a href="#faq">Chính sách đổi trả 7 ngày</a></li>
+          <li><a href="#faq">Phương thức thanh toán COD</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      &copy; 2026 Cà Phê Nhà Mộc. Giải pháp Chatbot AI bán hàng tự động tích hợp Gemini.
+    </div>
   </footer>
 
-  <!-- Dòng script nhúng chatbot -->
+  <!-- Sliding Cart Drawer -->
+  <div class="cart-drawer-overlay" id="cart-overlay"></div>
+  <aside class="cart-drawer" id="cart-drawer" aria-label="Giỏ hàng của bạn">
+    <div class="cart-header">
+      <h3>Giỏ Hàng Của Bạn</h3>
+      <button class="close-cart-btn" id="close-cart-btn" title="Đóng giỏ hàng">&times;</button>
+    </div>
+
+    <div class="cart-items" id="cart-items-container">
+      <!-- Sẽ được render tự động qua Javascript -->
+    </div>
+
+    <div class="cart-footer">
+      <div class="shipping-hint" id="shipping-hint">
+        Mua thêm để được miễn phí ship toàn quốc!
+      </div>
+      <div class="cart-summary-row">
+        <span>Tạm tính:</span>
+        <span id="cart-subtotal">0đ</span>
+      </div>
+      <div class="cart-total-row">
+        <span>Tổng cộng:</span>
+        <span class="total-amount" id="cart-total">0đ</span>
+      </div>
+      <button class="checkout-btn" id="checkout-btn">Tiến Hành Đặt Hàng</button>
+      <button class="ask-bot-cart-btn" id="ask-bot-cart-btn">
+        <span>💬 Hỏi Bot về đơn hàng này</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- Toast Container -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- Nhúng Widget Chatbot -->
   <script src="/chatbot.js" defer></script>
 
+  <!-- Script Logic Web & Cart -->
   <script>
     const vnd = (n) => n.toLocaleString('vi-VN') + 'đ';
 
-    // Mảng ảnh minh họa ngẫu nhiên (chủ đề cà phê từ Unsplash)
-    const images = [
-      "https://images.unsplash.com/photo-1559525839-b184a4d698c7?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80",
-      "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80",
-      "https://images.unsplash.com/photo-1495474472202-8f3871f251c6?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80",
-      "https://images.unsplash.com/photo-1611162458324-aae1eb4129a4?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80",
-      "https://images.unsplash.com/photo-1509042239860-f550ce710b93?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80",
-      "https://images.unsplash.com/photo-1544787219-7f47ccb76574?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80"
-    ];
+    let allProducts = [];
+    let cart = [];
+    let currentCategory = 'all';
+    let searchQuery = '';
 
-    fetch('/api/products')
-      .then(r => r.json())
-      .then(data => {
-        document.getElementById('shop-name').textContent = data.shop.name;
-        document.getElementById('hotline').textContent = data.shop.hotline;
-        document.getElementById('hours').textContent = 'Hỗ trợ ' + data.shop.supportHours;
+    // Load Cart from localStorage
+    try {
+      cart = JSON.parse(localStorage.getItem('shop_cart') || '[]');
+      if (!Array.isArray(cart)) cart = [];
+    } catch {
+      cart = [];
+    }
 
-        const grid = document.getElementById('products');
-        grid.innerHTML = '';
-        
-        data.products.forEach((p, index) => {
-          const card = document.createElement('div');
-          card.className = 'card';
-          
-          const imgUrl = images[index % images.length];
-          const isOut = p.stock <= 0;
-          
-          card.innerHTML = `
-            <div class="card-img-wrap">
-              <span class="tag ${isOut ? 'out' : ''}">${isOut ? 'Hết hàng' : 'Còn hàng'}</span>
-              <img src="${imgUrl}" alt="${p.name}" loading="lazy">
+    function saveCart() {
+      try {
+        localStorage.setItem('shop_cart', JSON.stringify(cart));
+      } catch {}
+      renderCart();
+    }
+
+    function showToast(msg) {
+      const c = document.getElementById('toast-container');
+      const t = document.createElement('div');
+      t.className = 'toast';
+      t.innerHTML = `<span>☕</span> <span>${msg}</span>`;
+      c.appendChild(t);
+      setTimeout(() => {
+        t.style.opacity = '0';
+        t.style.transition = 'opacity 0.4s';
+        setTimeout(() => t.remove(), 400);
+      }, 2500);
+    }
+
+    function addToCart(productId) {
+      const p = allProducts.find(item => item.id === productId);
+      if (!p || p.stock <= 0) return;
+
+      const existing = cart.find(item => item.id === productId);
+      if (existing) {
+        if (existing.qty < p.stock) {
+          existing.qty += 1;
+        } else {
+          showToast(`Chỉ còn ${p.stock} sản phẩm trong kho`);
+          return;
+        }
+      } else {
+        cart.push({ id: p.id, name: p.name, price: p.price, image: p.image, qty: 1, stock: p.stock });
+      }
+
+      saveCart();
+      showToast(`Đã thêm "${p.name}" vào giỏ hàng`);
+
+      // Bumping counter
+      const badge = document.getElementById('cart-counter');
+      badge.classList.add('bump');
+      setTimeout(() => badge.classList.remove('bump'), 300);
+    }
+
+    function changeQty(productId, delta) {
+      const item = cart.find(i => i.id === productId);
+      if (!item) return;
+      item.qty += delta;
+      if (item.qty <= 0) {
+        cart = cart.filter(i => i.id !== productId);
+      } else if (item.qty > item.stock) {
+        item.qty = item.stock;
+        showToast('Đã đạt số lượng tồn kho tối đa');
+      }
+      saveCart();
+    }
+
+    function removeFromCart(productId) {
+      cart = cart.filter(i => i.id !== productId);
+      saveCart();
+    }
+
+    function renderCart() {
+      const container = document.getElementById('cart-items-container');
+      const counter = document.getElementById('cart-counter');
+      const subtotalEl = document.getElementById('cart-subtotal');
+      const totalEl = document.getElementById('cart-total');
+      const hintEl = document.getElementById('shipping-hint');
+      const checkoutBtn = document.getElementById('checkout-btn');
+
+      const totalItems = cart.reduce((sum, item) => sum + item.qty, 0);
+      const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+
+      counter.textContent = totalItems;
+
+      if (cart.length === 0) {
+        container.innerHTML = `
+          <div class="cart-empty">
+            <div class="cart-empty-icon">🛒</div>
+            <p>Giỏ hàng của bạn đang trống</p>
+            <button class="btn btn-primary" style="margin-top: 14px; padding: 10px 20px; font-size: 0.9rem;" onclick="closeCart()">Khám phá sản phẩm</button>
+          </div>
+        `;
+        subtotalEl.textContent = '0đ';
+        totalEl.textContent = '0đ';
+        hintEl.textContent = 'Mua từ 299.000đ để được Freeship toàn quốc';
+        checkoutBtn.disabled = true;
+        return;
+      }
+
+      checkoutBtn.disabled = false;
+      container.innerHTML = '';
+      cart.forEach(item => {
+        const row = document.createElement('div');
+        row.className = 'cart-item';
+        row.innerHTML = `
+          <img src="${item.image}" alt="${item.name}">
+          <div class="cart-item-details">
+            <div class="cart-item-title">${item.name}</div>
+            <div class="cart-item-price">${vnd(item.price)}</div>
+            <div class="cart-qty-ctrl">
+              <button class="qty-btn" onclick="changeQty('${item.id}', -1)">-</button>
+              <span class="cart-item-qty">${item.qty}</span>
+              <button class="qty-btn" onclick="changeQty('${item.id}', 1)">+</button>
             </div>
-            <div class="card-content">
-              <h3>${p.name}</h3>
-              <p>${p.description}</p>
-              <div class="card-footer">
+          </div>
+          <button class="remove-item-btn" onclick="removeFromCart('${item.id}')" title="Xóa">🗑️</button>
+        `;
+        container.appendChild(row);
+      });
+
+      subtotalEl.textContent = vnd(subtotal);
+      totalEl.textContent = vnd(subtotal);
+
+      if (subtotal >= 299000) {
+        hintEl.innerHTML = '🎉 <strong>Tuyệt vời!</strong> Đơn hàng của bạn đủ điều kiện <strong>Freeship</strong>';
+      } else {
+        const remaining = 299000 - subtotal;
+        hintEl.innerHTML = `Mua thêm <strong>${vnd(remaining)}</strong> để được <strong>Freeship toàn quốc</strong>`;
+      }
+    }
+
+    function openCart() {
+      document.getElementById('cart-drawer').classList.add('active');
+      document.getElementById('cart-overlay').classList.add('active');
+    }
+
+    function closeCart() {
+      document.getElementById('cart-drawer').classList.remove('active');
+      document.getElementById('cart-overlay').classList.remove('active');
+    }
+
+    // Render Product Grid
+    function renderProducts() {
+      const grid = document.getElementById('products');
+      let filtered = allProducts;
+
+      if (currentCategory !== 'all') {
+        filtered = filtered.filter(p => p.category === currentCategory);
+      }
+
+      if (searchQuery.trim()) {
+        const q = searchQuery.toLowerCase().trim();
+        filtered = filtered.filter(p => 
+          p.name.toLowerCase().includes(q) || 
+          p.description.toLowerCase().includes(q)
+        );
+      }
+
+      if (filtered.length === 0) {
+        grid.innerHTML = `
+          <div style="grid-column: 1/-1; text-align: center; padding: 60px 20px; color: var(--text-muted);">
+            <div style="font-size: 3rem; margin-bottom: 12px;">🔍</div>
+            <h3>Không tìm thấy sản phẩm phù hợp</h3>
+            <p style="margin-top: 8px;">Hãy thử tìm từ khóa khác hoặc nhấn vào nút chat với AI để được tư vấn.</p>
+          </div>
+        `;
+        return;
+      }
+
+      grid.innerHTML = '';
+      filtered.forEach(p => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        const isOut = p.stock <= 0;
+
+        card.innerHTML = `
+          <div class="card-img-wrap">
+            <span class="tag ${isOut ? 'out' : ''}">${isOut ? 'Tạm hết hàng' : 'Còn hàng'}</span>
+            <img src="${p.image}" alt="${p.name}" loading="lazy">
+          </div>
+          <div class="card-content">
+            <h3>${p.name}</h3>
+            <p>${p.description}</p>
+            <div class="card-footer">
+              <div class="price-row">
                 <span class="price">${vnd(p.price)}</span>
-                <button class="buy-btn" ${isOut ? 'disabled title="Hết hàng"' : ''}>
-                  ${isOut ? 'Tạm hết' : 'Thêm giỏ'}
+                <span class="stock-info">${isOut ? 'Hết hàng' : `Còn ${p.stock} sản phẩm`}</span>
+              </div>
+              <div class="action-row">
+                <button class="buy-btn" onclick="addToCart('${p.id}')" ${isOut ? 'disabled' : ''}>
+                  ${isOut ? 'Tạm hết' : '🛒 Thêm giỏ'}
+                </button>
+                <button class="ask-btn" onclick="askBotAbout('${p.name.replace(/'/g, "\\'")}')">
+                  💬 Hỏi bot
                 </button>
               </div>
             </div>
-          `;
-          grid.appendChild(card);
-        });
-      })
-      .catch(() => {
-        document.getElementById('products').innerHTML = '<p style="text-align:center; grid-column: 1/-1;">Không tải được danh sách sản phẩm. Hãy kiểm tra server.</p>';
+          </div>
+        `;
+        grid.appendChild(card);
       });
+    }
 
-    // Nút mở chat
-    document.getElementById('open-chat').addEventListener('click', () => {
+    // Trigger AI Chatbot with custom questions
+    function askBotAbout(productName) {
       const fab = document.querySelector('.sc-fab');
-      if (fab && !document.querySelector('.sc-panel.sc-open')) {
+      const panel = document.querySelector('.sc-panel');
+      const input = document.querySelector('.sc-input');
+      const form = document.querySelector('.sc-form');
+
+      if (fab && !panel.classList.contains('sc-open')) {
         fab.click();
       }
+
+      setTimeout(() => {
+        if (input && form) {
+          input.value = `Tư vấn chi tiết cho mình về ${productName} với nhé!`;
+          input.focus();
+        }
+      }, 350);
+    }
+
+    // Fetch initial store data
+    fetch('/api/products')
+      .then(r => r.json())
+      .then(data => {
+        allProducts = data.products || [];
+        
+        // Fill store info
+        const shop = data.shop || {};
+        document.getElementById('header-phone').textContent = shop.hotline || '0900 000 000';
+        document.getElementById('footer-shop-name').textContent = '☕ ' + (shop.name || 'Cà Phê Nhà Mộc');
+        document.getElementById('footer-about').textContent = shop.about || '';
+        document.getElementById('footer-hotline').textContent = shop.hotline || '';
+        document.getElementById('footer-zalo').textContent = shop.zalo || '';
+        document.getElementById('footer-hours').textContent = shop.supportHours || '';
+
+        renderProducts();
+        renderCart();
+      })
+      .catch(() => {
+        document.getElementById('products').innerHTML = '<p style="text-align:center; grid-column: 1/-1;">Không tải được sản phẩm. Vui lòng thử lại sau.</p>';
+      });
+
+    // Event listeners
+    document.getElementById('open-cart-btn').addEventListener('click', openCart);
+    document.getElementById('close-cart-btn').addEventListener('click', closeCart);
+    document.getElementById('cart-overlay').addEventListener('click', closeCart);
+
+    // Filter Chips
+    document.querySelectorAll('.cat-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentCategory = btn.getAttribute('data-cat');
+        renderProducts();
+      });
+    });
+
+    // Live Search
+    document.getElementById('search-input').addEventListener('input', (e) => {
+      searchQuery = e.target.value;
+      renderProducts();
+    });
+
+    // Hero open chat
+    document.getElementById('hero-open-chat').addEventListener('click', () => {
+      const fab = document.querySelector('.sc-fab');
+      if (fab) fab.click();
+    });
+
+    // Order Consultation through Chatbot
+    document.getElementById('ask-bot-cart-btn').addEventListener('click', () => {
+      if (cart.length === 0) return;
+      closeCart();
+
+      const itemsDesc = cart.map(i => `${i.qty}x ${i.name}`).join(', ');
+      const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+      const text = `Mình đang muốn đặt đơn gồm: ${itemsDesc} (Tổng: ${vnd(subtotal)}). Shop tư vấn cách thức giao hàng và phí ship giúp mình nhé!`;
+
+      const fab = document.querySelector('.sc-fab');
+      const panel = document.querySelector('.sc-panel');
+      const input = document.querySelector('.sc-input');
+
+      if (fab && !panel.classList.contains('sc-open')) {
+        fab.click();
+      }
+
+      setTimeout(() => {
+        if (input) {
+          input.value = text;
+          input.focus();
+        }
+      }, 350);
+    });
+
+    // Checkout button demo action
+    document.getElementById('checkout-btn').addEventListener('click', () => {
+      if (cart.length === 0) return;
+      const total = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+      alert(`Cảm ơn bạn! Đơn hàng trị giá ${vnd(total)} đã được ghi nhận. Để hoàn tất đặt hàng, bạn có thể nhắn tin trực tiếp qua khung Chatbot bên góc phải nhé!`);
+    });
+
+    // FAQ Accordion
+    document.querySelectorAll('.faq-question').forEach(q => {
+      q.addEventListener('click', () => {
+        const item = q.parentElement;
+        item.classList.toggle('active');
+      });
     });
   </script>
 </body>
