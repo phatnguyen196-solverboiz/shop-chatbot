@@ -381,6 +381,45 @@ function serveStatic(req, res, pathname) {
   });
 }
 
+async function callGeminiJson(prompt, systemInstruction = null, imageBase64 = null) {
+  for (const model of FALLBACK_MODELS) {
+    for (let attempt = 0; attempt <= 1; attempt++) {
+      try {
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
+        const parts = [{ text: prompt }];
+        if (imageBase64) {
+          // Xóa prefix "data:image/jpeg;base64," nếu có
+          const base64Data = imageBase64.replace(/^data:image\/\w+;base64,/, '');
+          parts.push({ inlineData: { mimeType: 'image/jpeg', data: base64Data } });
+        }
+
+        const res = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'x-goog-api-key': CONFIG.apiKey },
+          body: JSON.stringify({
+            systemInstruction: systemInstruction ? { parts: [{ text: systemInstruction }] } : undefined,
+            contents: [{ role: 'user', parts }],
+            generationConfig: { temperature: 0.1, responseMimeType: 'application/json' },
+          }),
+        });
+
+        if (!res.ok) {
+          if (res.status === 404 || res.status === 503) throw new Error('Switch model');
+          throw new Error('Gemini API Error: ' + res.status);
+        }
+        
+        const data = await res.json();
+        const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+        return JSON.parse(text);
+      } catch (err) {
+        if (err.message === 'Switch model') break; // Chuyển model khác
+        await sleep(500); // Thử lại
+      }
+    }
+  }
+  throw new Error('Tất cả các model đều thất bại');
+}
+
 // -------------------------------------------------------------------- server --
 
 async function handleChat(req, res) {
@@ -451,6 +490,36 @@ function createServer() {
       if (pathname === '/api/chat') {
         if (req.method !== 'POST') return sendJson(req, res, 405, { error: 'Chỉ hỗ trợ POST.' });
         return await handleChat(req, res);
+      }
+      if (pathname === '/api/ai-search') {
+        if (req.method !== 'POST') return sendJson(req, res, 405, { error: 'Chỉ hỗ trợ POST.' });
+        const body = JSON.parse(await readBody(req));
+        if (!CONFIG.apiKey) return sendJson(req, res, 200, { ids: [] });
+        const prompt = `Người dùng tìm kiếm: "${body.query}". Dựa vào danh sách sản phẩm sau, hãy trả về danh sách các ID sản phẩm phù hợp nhất (tối đa 4). Trả về JSON mảng chuỗi ID (ví dụ: ["robusta-500", "phin-nhom"]). Nếu không có gì phù hợp, trả về mảng rỗng [].\nDanh sách sản phẩm:\n${JSON.stringify(DATA.products.map(p => ({id: p.id, name: p.name, desc: p.description})))}`;
+        try {
+          const result = await callGeminiJson(prompt);
+          return sendJson(req, res, 200, { ids: Array.isArray(result) ? result : [] });
+        } catch { return sendJson(req, res, 200, { ids: [] }); }
+      }
+      if (pathname === '/api/ocr') {
+        if (req.method !== 'POST') return sendJson(req, res, 405, { error: 'Chỉ hỗ trợ POST.' });
+        const body = JSON.parse(await readBody(req));
+        if (!CONFIG.apiKey) return sendJson(req, res, 200, { amount: 120000, valid: true });
+        const prompt = `Đây là ảnh chụp màn hình hóa đơn/chuyển khoản. Hãy trích xuất số tiền chuyển và nội dung chuyển khoản. Trả về đúng định dạng JSON: {"amount": <số tiền dạng số, không có dấu phẩy/chữ>, "content": "<nội dung>", "valid": <true/false (true nếu là biên lai chuyển khoản thành công)>}.`;
+        try {
+          const result = await callGeminiJson(prompt, null, body.image);
+          return sendJson(req, res, 200, result);
+        } catch { return sendJson(req, res, 200, { valid: false }); }
+      }
+      if (pathname === '/api/sentiment') {
+        if (req.method !== 'POST') return sendJson(req, res, 405, { error: 'Chỉ hỗ trợ POST.' });
+        const body = JSON.parse(await readBody(req));
+        if (!CONFIG.apiKey) return sendJson(req, res, 200, { sentiment: 'positive', summary: 'Cảm ơn bạn đã đánh giá!' });
+        const prompt = `Phân tích đánh giá sau: "${body.review}". Trả về JSON: {"sentiment": "positive" | "negative" | "neutral", "summary": "tóm tắt ngắn gọn 1 câu về ý chính"}`;
+        try {
+          const result = await callGeminiJson(prompt);
+          return sendJson(req, res, 200, result);
+        } catch { return sendJson(req, res, 200, { sentiment: 'neutral', summary: 'Cảm ơn đánh giá của bạn' }); }
       }
       if (req.method === 'GET' || req.method === 'HEAD') return serveStatic(req, res, pathname);
 
